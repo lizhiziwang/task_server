@@ -1,15 +1,14 @@
 package com.zsh.task.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.zsh.task.common.Result;
 import com.zsh.task.entity.User;
 import com.zsh.task.service.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
@@ -30,13 +29,35 @@ public class UserController {
         String realPwd = loginUser.getPwd();
         if (realPwd.equals(password)){
             StpUtil.login(loginUser.getId());
+            JSONObject jo = new JSONObject();
+            jo.put("user",loginUser);
+            jo.put("token",StpUtil.getTokenValue());
+            //设置为在线状态
+            loginUser.setIsOnline(1);
+            us.saveOrUpdate(loginUser);
+            return Result.succeed(jo.toJSONString());
         }else {
             return Result.failed("登录失败！");
         }
-        JSONObject jo = new JSONObject();
-        jo.put("user",loginUser);
-        jo.put("token",StpUtil.getTokenValue());
-        return Result.succeed(jo.toJSONString());
+    }
+
+    @PostMapping("/register")
+    public Result<Boolean> register(@RequestBody User user){
+        String userName = user.getName();
+        if (StringUtils.isBlank(userName)) {
+            return Result.failed("用户名不能为空！");
+        }
+        User byName = us.getByName(userName);
+        if (byName != null) {
+            return Result.failed("用户名'"+userName+"'已存在，请重新输入！");
+        }
+        User re = new User();
+        re.setIsOnline(0);
+        re.setId(IdUtil.getSnowflakeNextId());
+        re.setName(user.getName());
+        re.setPwd(user.getPwd());
+        return Result.succeed(us.save(re));
+
     }
 
     // 查询登录状态，浏览器访问： http://localhost:8081/user/isLogin
