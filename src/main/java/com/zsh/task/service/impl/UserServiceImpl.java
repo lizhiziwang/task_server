@@ -19,4 +19,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         wrapper.eq("name",name);
         return getOne(wrapper);
     }
+
+    @Override
+    public Boolean downLine(Long userId) {
+        User user = this.getById(userId);
+        return user != null && this.updateById(user);
+    }
 }

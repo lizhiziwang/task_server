@@ -7,4 +7,9 @@ import java.util.List;
 
 public interface UserService extends IService<User> {
     User getByName(String name);
+    /**
+     * @param userId
+     * @return 布尔
+     * */
+    Boolean downLine(Long userId);
 }

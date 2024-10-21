@@ -21,11 +21,14 @@ public class UserController {
     @Resource
     UserService us;
 
-    @GetMapping("doLogin")
+    @GetMapping("/login")
     public Result<String> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
                           @RequestParam(name = "password")@NotBlank String password) {
         // 此处仅作模拟示例，真实项目需要从数据库中查询数据进行比对
         User loginUser = us.getByName(userName);
+        if(loginUser == null){
+            return Result.failed("用户不存在！");
+        }
         String realPwd = loginUser.getPwd();
         if (realPwd.equals(password)){
             StpUtil.login(loginUser.getId());
@@ -58,6 +61,10 @@ public class UserController {
         re.setPwd(user.getPwd());
         return Result.succeed(us.save(re));
 
+    }
+    @GetMapping("/down/{id}")
+    public Result<Boolean> downLine(@PathVariable Long id){
+        return Result.succeed(us.downLine(id));
     }
 
     // 查询登录状态，浏览器访问： http://localhost:8081/user/isLogin
