@@ -1,0 +1,16 @@
+ALTER TABLE "task"."user"
+  ADD COLUMN "create_time" timestamp,
+  ADD COLUMN "phone" varchar(32),
+  ADD COLUMN "gender" int2,
+  ADD COLUMN "birthday" timestamp,
+  ADD COLUMN "update_time" timestamp;
+
+COMMENT ON COLUMN "task"."user"."create_time" IS '创建时间';
+
+COMMENT ON COLUMN "task"."user"."phone" IS '手机号';
+
+COMMENT ON COLUMN "task"."user"."gender" IS '性别 0-女，1男';
+
+COMMENT ON COLUMN "task"."user"."birthday" IS '生日';
+
+COMMENT ON COLUMN "task"."user"."update_time" IS '更新时间';
