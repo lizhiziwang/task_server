@@ -18,15 +18,15 @@ public class Friend {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long id;
-    @TableField(value = "user1_id")
+    @TableField(value = "user1")
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long user1Id;
-    @TableField(value = "user1_id")
+    @TableField(value = "user2")
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long user2Id;
     @TableField(value = "user1_name",jdbcType = JdbcType.VARCHAR)
     private String user1Name;
-    @TableField(value = "user1_name",jdbcType = JdbcType.VARCHAR)
+    @TableField(value = "user2_name",jdbcType = JdbcType.VARCHAR)
     private String user2Name;
     @TableField(value = "create_time",jdbcType = JdbcType.TIMESTAMP)
     private Date createTime;

@@ -8,12 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.Result;
 import com.zsh.task.entity.User;
+import com.zsh.task.service.FriendService;
 import com.zsh.task.service.UserService;
 import com.zsh.task.vo.UserVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -22,6 +24,8 @@ public class UserController {
     UserService us;
     @Resource
     UserCache uc;
+    @Resource
+    FriendService fs;
 
     @GetMapping("/login")
     public Result<String> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -85,5 +89,9 @@ public class UserController {
     @RequestMapping("isLogin")
     public String isLogin() {
         return "当前会话是否登录：" + StpUtil.isLogin();
+    }
+    @GetMapping("/friends/{id}")
+    public Result<List<User>> getAllFriend(@PathVariable Long id){
+        return Result.succeed(fs.getAllFriend(id));
     }
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zsh.task.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.zsh.task.entity.User">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="pwd" jdbcType="VARCHAR" property="pwd" />
+        <result column="alia" jdbcType="VARCHAR" property="alia" />
+        <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+        <result column="is_online" jdbcType="SMALLINT" property="isOnline" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="gender" jdbcType="SMALLINT" property="gender" />
+        <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="base_column">
+        id,name,pwd,alia,avatar,is_online,create_time,phone,gender,birthday,update_time
+    </sql>
+
+    <update id="updateByPrimaryKeySelective">
+        update task.user
+        <set>
+            <if test="name !=null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pwd !=null">
+                pwd = #{pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="alia !=null">
+                alia = #{alia,jdbcType=VARCHAR},
+            </if>
+            <if test="avatar !=null">
+                avatar = #{avatar,jdbcType=VARCHAR},
+            </if>
+            <if test="isOnline !=null">
+                is_online = #{isOnline,jdbcType=SMALLINT},
+            </if>
+            <if test="createTime !=null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="phone !=null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="gender !=null">
+                gender = #{gender,jdbcType=SMALLINT},
+            </if>
+            <if test="birthday !=null">
+                birthday = #{birthday,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime !=null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByIds" parameterType="java.util.Set" resultType="com.zsh.task.entity.User">
+        select
+        <include refid="base_column"/>
+        from task.user
+        where id
+        <foreach collection="ids" index="index" close=")" open="in (" separator="," item="item">
+        #{item}
+        </foreach>
+    </select>
+</mapper>
