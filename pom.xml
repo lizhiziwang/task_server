@@ -66,6 +66,11 @@
             <artifactId>hutool-core</artifactId>
             <version>5.8.16</version>
         </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-cache</artifactId>
+            <version>5.8.16</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -101,6 +106,17 @@
             <version>1.18.34</version>
 <!--            <scope>provided</scope>-->
         </dependency>
+
+<!--        需要JDK版本升至17-->
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.data</groupId>-->
+<!--            <artifactId>spring-data-redis</artifactId>-->
+<!--            <version>3.2.10</version>-->
+<!--        </dependency>-->
+
+
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
