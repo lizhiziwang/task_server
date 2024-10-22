@@ -1,6 +1,5 @@
 package com.zsh.task.entity;
 
-
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -14,20 +13,21 @@ import java.util.Date;
 
 @Data
 @Accessors(chain = true)
-@TableName(schema = "task",value = "message")
-public class Message {
+@TableName(schema = "task",value = "user_relation")
+public class Friend {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long id;
-    //发送人
+    @TableField(value = "user1")
     @JSONField(serializeUsing = ToStringSerializer.class)
-    @TableField(value = "user1_id",jdbcType = JdbcType.BIGINT)
     private Long user1Id;
-    //接收人
+    @TableField(value = "user2")
     @JSONField(serializeUsing = ToStringSerializer.class)
-    @TableField(value = "user2_id",jdbcType = JdbcType.BIGINT)
     private Long user2Id;
-    private String context;
-    @TableField(value = "send_time",jdbcType = JdbcType.TIMESTAMP)
-    private Date sendTime;
+    @TableField(value = "user1_name",jdbcType = JdbcType.VARCHAR)
+    private String user1Name;
+    @TableField(value = "user2_name",jdbcType = JdbcType.VARCHAR)
+    private String user2Name;
+    @TableField(value = "create_time",jdbcType = JdbcType.TIMESTAMP)
+    private Date createTime;
 }

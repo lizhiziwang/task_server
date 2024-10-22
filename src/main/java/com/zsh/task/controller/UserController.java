@@ -3,23 +3,29 @@ package com.zsh.task.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.Result;
 import com.zsh.task.entity.User;
+import com.zsh.task.service.FriendService;
 import com.zsh.task.service.UserService;
+import com.zsh.task.vo.UserVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Resource
     UserService us;
+    @Resource
+    UserCache uc;
+    @Resource
+    FriendService fs;
 
     @GetMapping("/login")
     public Result<String> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -32,12 +38,15 @@ public class UserController {
         String realPwd = loginUser.getPwd();
         if (realPwd.equals(password)){
             StpUtil.login(loginUser.getId());
+            String token = StpUtil.getTokenValue();
             JSONObject jo = new JSONObject();
             jo.put("user",loginUser);
-            jo.put("token",StpUtil.getTokenValue());
+            jo.put("token",token);
             //设置为在线状态
             loginUser.setIsOnline(1);
             us.saveOrUpdate(loginUser);
+            //添加用户登录信息缓存
+            uc.put(token,loginUser);
             return Result.succeed(jo.toJSONString());
         }else {
             return Result.failed("登录失败！");
@@ -66,10 +75,23 @@ public class UserController {
     public Result<Boolean> downLine(@PathVariable Long id){
         return Result.succeed(us.downLine(id));
     }
+    //用户列表查询
+    @PostMapping("/search")
+    public Result<Page<User>> searchUsers(@RequestBody UserVo vo,
+                                          @RequestParam(name = "size")Long size,
+                                          @RequestParam(name = "current") Long current){
+
+        Page<User> userPage = us.searchUsers(vo, size, current);
+        return Result.succeed(userPage);
+    }
 
     // 查询登录状态，浏览器访问： http://localhost:8081/user/isLogin
     @RequestMapping("isLogin")
     public String isLogin() {
         return "当前会话是否登录：" + StpUtil.isLogin();
+    }
+    @GetMapping("/friends/{id}")
+    public Result<List<User>> getAllFriend(@PathVariable Long id){
+        return Result.succeed(fs.getAllFriend(id));
     }
 }
