@@ -12,4 +12,5 @@ import java.util.List;
 public interface UserMapper extends BaseMapper<User> {
     int updateByPrimaryKeySelective(User user);
     List<User> selectByIds(@Param("ids") Collection<?> collection);
+    List<User> findFriends(@Param("userId")Long userId);
 }

@@ -1,0 +1,7 @@
+ALTER TABLE "task"."message"
+  ADD COLUMN "type" varchar(64),
+  ADD COLUMN "is_read" int2;
+
+COMMENT ON COLUMN "task"."message"."type" IS '消息类型';
+
+COMMENT ON COLUMN "task"."message"."is_read" IS '0-未读，1-已读';
