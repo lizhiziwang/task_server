@@ -75,5 +75,8 @@
         WHERE
             t1.id != #{userId,jdbcType=BIGINT} and
             (t2.user1 = #{userId,jdbcType=BIGINT} or t2.user2 = #{userId,jdbcType=BIGINT})
+            <if test="name != null">
+                and t1.name like '%${name}%'
+            </if>
     </select>
 </mapper>

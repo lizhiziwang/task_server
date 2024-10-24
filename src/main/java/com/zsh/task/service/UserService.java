@@ -16,4 +16,6 @@ public interface UserService extends IService<User> {
     Boolean downLine(Long userId);
 
     Page<User> searchUsers(UserVo vo, Long size, Long current);
+
+    List<User> findFriends(Long userId,String userName);
 }

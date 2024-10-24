@@ -9,13 +9,16 @@ import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.Result;
 import com.zsh.task.entity.User;
 import com.zsh.task.service.FriendService;
+import com.zsh.task.service.MessageService;
 import com.zsh.task.service.UserService;
+import com.zsh.task.vo.UnreadVo;
 import com.zsh.task.vo.UserVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -26,6 +29,8 @@ public class UserController {
     UserCache uc;
     @Resource
     FriendService fs;
+    @Resource
+    MessageService ms;
 
     @GetMapping("/login")
     public Result<String> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -90,8 +95,25 @@ public class UserController {
     public String isLogin() {
         return "当前会话是否登录：" + StpUtil.isLogin();
     }
-    @GetMapping("/friends/{id}")
-    public Result<List<User>> getAllFriend(@PathVariable Long id){
-        return Result.succeed(fs.getAllFriend(id));
+    /**
+     * @param name 查询用户名,传null时会查询当前用户的所有好友
+     * @param userId 当前用户ID
+     * */
+    @GetMapping("/friends/{userId}")
+    public Result<List<User>> getAllFriend(@PathVariable Long userId,
+                                           @RequestParam(name = "name") String name){
+        List<User> allFriend = fs.getAllFriend(userId, name);
+        //添加未读数
+        List<UnreadVo> vos = ms.selectUnread(userId);
+        for(User user:allFriend){
+            for (UnreadVo vo:vos){
+                if (vo.getSendUser().equals(user.getId())) {
+                    user.setMesCount(vo.getCount());
+                    break;
+                }
+            }
+        }
+
+        return Result.succeed(allFriend);
     }
 }

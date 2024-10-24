@@ -40,4 +40,9 @@ public class User {
     private Date birthday;
     @TableField(value = "update_time",jdbcType = JdbcType.TIMESTAMP)
     private Date updateTime;
+
+    @TableField(exist = false)
+    private Integer mesCount;
+    @TableField(exist = false)
+    private String lastMess;
 }

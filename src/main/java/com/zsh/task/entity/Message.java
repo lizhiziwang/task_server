@@ -30,4 +30,8 @@ public class Message {
     private String context;
     @TableField(value = "send_time",jdbcType = JdbcType.TIMESTAMP)
     private Date sendTime;
+
+    private String type;
+    @TableField(value = "is_read",jdbcType = JdbcType.SMALLINT)
+    private Integer isRead;
 }

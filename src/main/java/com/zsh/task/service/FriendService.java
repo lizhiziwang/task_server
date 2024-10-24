@@ -7,5 +7,5 @@ import com.zsh.task.entity.User;
 import java.util.List;
 
 public interface FriendService extends IService<Friend> {
-    List<User> getAllFriend(Long userId);
+    List<User> getAllFriend(Long userId,String name);
 }

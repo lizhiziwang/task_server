@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -58,5 +59,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         return page(new Page<>(current,size),wrapper);
+    }
+
+    @Override
+    public List<User> findFriends(Long userId, String userName) {
+        return baseMapper.findFriends(userId,userName);
     }
 }

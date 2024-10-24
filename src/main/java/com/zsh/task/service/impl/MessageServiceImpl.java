@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zsh.task.entity.Message;
 import com.zsh.task.mapper.MessageMapper;
 import com.zsh.task.service.MessageService;
+import com.zsh.task.vo.UnreadVo;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -35,8 +36,12 @@ public class MessageServiceImpl  extends ServiceImpl<MessageMapper, Message> imp
 
         List<Message> var2 = this.list(wrapper);
 
-        List<Message> result = var2.stream().sorted(Comparator.comparing(Message::getSendTime)).collect(Collectors.toList());
-        return result;
+        return var2.stream().sorted(Comparator.comparing(Message::getSendTime)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UnreadVo> selectUnread(Long userId) {
+        return baseMapper.selectUnread(userId);
     }
 
 
