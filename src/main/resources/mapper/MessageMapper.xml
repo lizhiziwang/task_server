@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zsh.task.mapper.MessageMapper">
+    <resultMap id="BaseResultMap" type="com.zsh.task.entity.Message">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="user1_id" jdbcType="BIGINT" property="user1Id" />
+        <result column="user2_id" jdbcType="BIGINT" property="user2Id" />
+        <result column="context" jdbcType="VARCHAR" property="context" />
+        <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="is_read" jdbcType="SMALLINT" property="isRead" />
+    </resultMap>
+
+
+    <select id="selectUnread" parameterType="java.util.List" resultType="com.zsh.task.vo.UnreadVo">
+     select user1_id as sendUser,count(1) as count from task.message
+     where is_read = 0 and user2_id = #{userId,jdbcType=BIGINT}
+		 GROUP BY user1_id
+    </select>
+
+</mapper>

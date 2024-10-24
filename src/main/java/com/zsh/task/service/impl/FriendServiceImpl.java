@@ -22,13 +22,15 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend>
     UserMapper um;
 
     @Override
-    public List<User> getAllFriend(Long userId) {
-        QueryWrapper<Friend> wrapper = new QueryWrapper<>();
-        wrapper.eq("user1",userId).or().eq("user2",userId);
-        List<Friend> re = this.list(wrapper);
-        Set<Long> set = new HashSet<>();
-        re.forEach(e-> set.add(userId.equals(e.getUser1Id())?e.getUser2Id():e.getUser1Id()));
-        return um.selectByIds(set);
+    public List<User> getAllFriend(Long userId,String name) {
+//        QueryWrapper<Friend> wrapper = new QueryWrapper<>();
+//        wrapper.eq("user1",userId).or().eq("user2",userId);
+//        List<Friend> re = this.list(wrapper);
+//        Set<Long> set = new HashSet<>();
+//        re.forEach(e-> set.add(userId.equals(e.getUser1Id())?e.getUser2Id():e.getUser1Id()));
+//        List<User> users = um.selectByIds(set);
+//        users.forEach(e->e.setPwd(""));
+        return um.findFriends(userId,name);
     }
 
 //    public static void main(String[] args) {

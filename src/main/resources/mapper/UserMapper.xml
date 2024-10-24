@@ -65,4 +65,18 @@
         #{item}
         </foreach>
     </select>
+
+    <select id="findFriends" resultType="com.zsh.task.entity.User" parameterType="java.lang.Long">
+        SELECT
+            t1.id,t1.name,t1.alia,t1.avatar,t1.is_online,t1.create_time,t1.phone,t1.gender,t1.birthday,t1.update_time
+        FROM
+            task.user t1
+            INNER JOIN task.user_relation t2 ON ( t1.ID = t2.user1 OR t1.ID = t2.user2 )
+        WHERE
+            t1.id != #{userId,jdbcType=BIGINT} and
+            (t2.user1 = #{userId,jdbcType=BIGINT} or t2.user2 = #{userId,jdbcType=BIGINT})
+            <if test="name != null">
+                and t1.name like '%${name}%'
+            </if>
+    </select>
 </mapper>

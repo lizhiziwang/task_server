@@ -3,27 +3,35 @@ server:
 # 日志打印配置
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
-#logging:
-#  level:
-#    root: info
-#    com.zsh.task.mapper.UserMapper: info
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    root: info
+    com.zsh.task.mapper.UserMapper: info
 
 spring:
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:postgresql://127.0.0.1:5432/spa_db?reWriteBatchedInserts=true
     driver-class-name: org.postgresql.Driver
     password: 123456
-    url: jdbc:postgresql://127.0.0.1:5432/spa_db?reWriteBatchedInserts=true
     username: postgres
-    hikari:
-      connection-timeout: 10000
-      validation-timeout: 3000
-      idle-timeout: 60000
-      login-timeout: 5
-      max-lifetime: 60000
-      maximum-pool-size: 10
-      minimum-idle: 5
-      read-only: false
+    druid:
+      #SpringBoot因为默认是hikari数据源所以对于其他数据源默认是不注入这些属性的，需要手动配置
+      #druid数据源专有配置
+      initialSize: 10
+      minIdle: 10
+      maxActive: 20
+      maxWait: 600000
+      # 主要配置以上几个即可
+      timeBetweenEvictionRunsMillis: 600000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT version()
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:
   # token 名称（同时也是 cookie 名称）

@@ -44,7 +44,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
         String msg = message.getPayload().toString();
         JSONObject jo = JSONObject.parseObject(msg);
         String user2Id = jo.getString("id");
-
+        //信息持久化
         Runnable task = ()->{
             Message var = new Message();
             var.setContext(jo.getString("message"));
@@ -84,7 +84,8 @@ public class MyWebSocketHandler implements WebSocketHandler {
      */
     public static void sendMessage(String id, String message) {
         WebSocketSession webSocketSession = SESSIONS.get(id);
-        if (webSocketSession == null || !webSocketSession.isOpen()) return;
+        if (webSocketSession == null || !webSocketSession.isOpen())
+            return;
         try {
             webSocketSession.sendMessage(new TextMessage(message));
         } catch (IOException e) {
