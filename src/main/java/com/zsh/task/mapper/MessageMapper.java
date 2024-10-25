@@ -11,4 +11,6 @@ import java.util.List;
 @Mapper
 public interface MessageMapper extends BaseMapper<Message> {
     List<UnreadVo> selectUnread(@Param("userId") Long userId);
+    List<Message> getMessage(@Param("id1") Long id1,
+                             @Param("id2") Long id2);
 }

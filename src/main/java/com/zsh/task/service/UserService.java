@@ -6,6 +6,7 @@ import com.zsh.task.entity.User;
 import com.zsh.task.vo.UserVo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService extends IService<User> {
     User getByName(String name);
@@ -18,4 +19,6 @@ public interface UserService extends IService<User> {
     Page<User> searchUsers(UserVo vo, Long size, Long current);
 
     List<User> findFriends(Long userId,String userName);
+
+    Map<Long,User> getTwoUserToMap(Long id1, Long id2);
 }
