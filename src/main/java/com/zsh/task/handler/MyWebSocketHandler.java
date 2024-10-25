@@ -7,6 +7,7 @@ import com.zsh.task.config.ThreadPoolConfig;
 import com.zsh.task.constant.MessageType;
 import com.zsh.task.entity.Message;
 import com.zsh.task.service.impl.MessageServiceImpl;
+import com.zsh.task.vo.MessageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.*;
@@ -51,15 +52,28 @@ public class MyWebSocketHandler implements WebSocketHandler {
         var.setContext(jo.getString("message"));
         var.setId(IdUtil.getSnowflakeNextId());
         var.setSendTime(new Date());
-        var.setUser1Id(Long.getLong(user1Id));
-        var.setUser2Id(Long.getLong(user2Id));
+        var.setUser1Id(Long.valueOf(user1Id));
+        var.setUser2Id(Long.valueOf(user2Id));
         var.setIsRead(0);
         var.setType(MessageType.TEXT.name());
         //信息持久化
         tpc.poolExecutor().execute(()-> ms.save(var));
+        MessageVo var2 = new MessageVo();
+        var2.setId(IdUtil.getSnowflakeNextId())
+                .setMsg(jo.getString("message"))
+                        .setImgUrl("")
+                                .setUId(Long.valueOf(user1Id));
+
+
         // 发送消息
-        sendMessage(user2Id,JSONObject.toJSONString(var));
+        sendMessage(user2Id,JSONObject.toJSONString(var2));
         log.debug("处理消息：{}",jo.getString("message"));
+    }
+
+    public static void main(String[] args) {
+        Long a = 1231321321321L;
+        String s  = "55555555555";
+        System.out.println(Long.valueOf(s));
     }
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
