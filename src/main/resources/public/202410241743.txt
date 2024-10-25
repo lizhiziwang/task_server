@@ -1,0 +1,6 @@
+-- message表添加索引
+CREATE INDEX "mes_index" ON "task"."message" USING btree (
+  "user1_id" "pg_catalog"."int8_ops" ASC NULLS LAST,
+  "user2_id" "pg_catalog"."int8_ops" ASC NULLS LAST,
+	"send_time" "pg_catalog"."timestamp_ops" ASC NULLS LAST
+);

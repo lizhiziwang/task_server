@@ -18,4 +18,12 @@
 		 GROUP BY user1_id
     </select>
 
+
+
+    <select id="getMessage" resultType="com.zsh.task.entity.Message">
+        select * from task.message where
+            (user1_id = #{id1} and user2_id = #{id2}) or (user1_id = #{id2} and user2_id = #{id1})
+            and send_time >= current_date order By send_time Asc
+    </select>
+
 </mapper>

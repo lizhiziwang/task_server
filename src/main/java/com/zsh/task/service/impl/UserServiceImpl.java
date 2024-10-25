@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -64,5 +65,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public List<User> findFriends(Long userId, String userName) {
         return baseMapper.findFriends(userId,userName);
+    }
+
+    @Override
+    public Map<Long, User> getTwoUserToMap(Long id1, Long id2) {
+        return baseMapper.getTwoUserToMap(id1,id2);
     }
 }

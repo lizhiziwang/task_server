@@ -8,6 +8,6 @@ import com.zsh.task.vo.UnreadVo;
 import java.util.List;
 
 public interface MessageService extends IService<Message> {
-    List<Message> getMessage(Long id1, Long id2,String sendTime);
+    List<Message> getMessage(Long id1, Long id2);
     List<UnreadVo> selectUnread(Long userId);
 }

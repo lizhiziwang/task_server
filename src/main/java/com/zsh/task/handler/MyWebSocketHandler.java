@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.zsh.task.config.ThreadPoolConfig;
+import com.zsh.task.constant.MessageType;
 import com.zsh.task.entity.Message;
 import com.zsh.task.service.impl.MessageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
         String query = uri.getQuery();
 
         SESSIONS.put(query.split("=")[1], session);
+        log.info("建立新的连接：{}",query.split("=")[1]);
     }
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
@@ -44,19 +46,20 @@ public class MyWebSocketHandler implements WebSocketHandler {
         String msg = message.getPayload().toString();
         JSONObject jo = JSONObject.parseObject(msg);
         String user2Id = jo.getString("id");
+        // 构建信息对象
+        Message var = new Message();
+        var.setContext(jo.getString("message"));
+        var.setId(IdUtil.getSnowflakeNextId());
+        var.setSendTime(new Date());
+        var.setUser1Id(Long.getLong(user1Id));
+        var.setUser2Id(Long.getLong(user2Id));
+        var.setIsRead(0);
+        var.setType(MessageType.TEXT.name());
         //信息持久化
-        Runnable task = ()->{
-            Message var = new Message();
-            var.setContext(jo.getString("message"));
-            var.setId(IdUtil.getSnowflakeNextId());
-            var.setSendTime(new Date());
-            var.setUser1Id(Long.getLong(user1Id));
-            var.setUser2Id(Long.getLong(user2Id));
-            ms.save(var);
-        };
-        tpc.poolExecutor().execute(task);
-        sendMessage(user2Id,jo.getString("message"));
-        System.out.println(msg);
+        tpc.poolExecutor().execute(()-> ms.save(var));
+        // 发送消息
+        sendMessage(user2Id,JSONObject.toJSONString(var));
+        log.debug("处理消息：{}",jo.getString("message"));
     }
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
@@ -83,6 +86,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param message
      */
     public static void sendMessage(String id, String message) {
+        //todo 如果session不存在，使用消息队列延迟发送
         WebSocketSession webSocketSession = SESSIONS.get(id);
         if (webSocketSession == null || !webSocketSession.isOpen())
             return;

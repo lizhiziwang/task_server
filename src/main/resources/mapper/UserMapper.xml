@@ -79,4 +79,9 @@
                 and t1.name like '%${name}%'
             </if>
     </select>
+    <select id="getTwoUserToMap" resultType="com.zsh.task.entity.User">
+        select <include refid="base_column"/>
+            from task.user
+        where id = #{id1,jdbcType=BIGINT} or id = #{id2,jdbcType=BIGINT}
+    </select>
 </mapper>
