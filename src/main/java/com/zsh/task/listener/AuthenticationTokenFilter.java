@@ -6,6 +6,7 @@ import com.zsh.task.entity.LoginUser;
 import com.zsh.task.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -25,12 +26,17 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Resource
     UserCache uc;
+    @Value("${game.url.notVerify}")
+    String notVerify;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
-        if (requestURI.contains("/user/login")||requestURI.contains("/user/register")) {
-            return true;
+        String[] par = notVerify.split(",");
+        for(String var: par){
+            if(requestURI.contains(var)){
+                return true;
+            }
         }
         return super.shouldNotFilter(request);
     }

@@ -7,19 +7,19 @@ import java.util.Map;
 
 public enum GameType {
 
-    MOBA(1,"MOBA","多人联机在线竞技游戏"),
-    FPS(2,"FPS","第一人称射击类游戏"),
-    ACT(3,"ACT","动作游戏"),
-    STG(4,"STG","射击游戏"),
-    FTG(5,"FTG","格斗游戏"),
-    AVG(6,"AVG","冒险游戏"),
-    SIM(7,"SIM","模拟游戏"),
-    RPG(8,"RPG","角色扮演游戏"),
-    SG(9,"SG","策略游戏"),
-    MG(10,"MG","音乐游戏"),
-    CG(11,"CG","休闲游戏"),
-    SG_(12,"SG_","体育游戏"),
-    RG(13,"RG","竞速游戏");
+    MOBA(1,"MOBA","MOBA"),
+    FPS(2,"FPS","FPS"),
+    ACT(3,"ACT","动作"),
+    STG(4,"STG","射击"),
+    FTG(5,"FTG","格斗"),
+    AVG(6,"AVG","冒险"),
+    SIM(7,"SIM","模拟"),
+    RPG(8,"RPG","角色扮演"),
+    SG(9,"SG","策略"),
+    MG(10,"MG","音乐"),
+    CG(11,"CG","休闲"),
+    SG_(12,"SG_","体育"),
+    RG(13,"RG","竞速");
 
 
     final String code;

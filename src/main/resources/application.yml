@@ -3,12 +3,20 @@ server:
 # 日志打印配置
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #logging:
 #  level:
 #    root: info
 #    com.zsh.task.mapper.UserMapper: info
 #    com.zsh.task.mapper.MessageMapper: info
+
+game:
+  url:
+    # ","分割，不需要进行鉴权的接口
+    notVerify: /user/login,/user/register,/file,/
+  file:
+    # 文件存放路径
+    path: d:/task_server_game/upload/
 
 
 spring:
