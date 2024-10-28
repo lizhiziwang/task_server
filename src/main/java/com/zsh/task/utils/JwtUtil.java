@@ -24,18 +24,18 @@ public class JwtUtil {
     public static String getUUID(){
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
-    public static void main(String[] args) {
-        // 使用Keys类的方法生成符合HS256要求的密钥
-        byte[] keyBytes = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
-
-        // 以下是示例的JWT生成部分，这里只是简单展示如何使用新生成的密钥
-        String jwt = Jwts.builder()
-                .setSubject("example subject")
-                .signWith(SignatureAlgorithm.HS256, keyBytes)
-                .compact();
-
-        System.out.println("Generated JWT: " + jwt);
-    }
+//    public static void main(String[] args) {
+//        // 使用Keys类的方法生成符合HS256要求的密钥
+//        byte[] keyBytes = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
+//
+//        // 以下是示例的JWT生成部分，这里只是简单展示如何使用新生成的密钥
+//        String jwt = Jwts.builder()
+//                .setSubject("example subject")
+//                .signWith(SignatureAlgorithm.HS256, keyBytes)
+//                .compact();
+//
+//        System.out.println("Generated JWT: " + jwt);
+//    }
 
     /**
      * 生成jtw

@@ -11,13 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.*;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -69,11 +67,6 @@ public class MyWebSocketHandler implements WebSocketHandler {
         log.debug("处理消息：{}",jo.getString("message"));
     }
 
-    public static void main(String[] args) {
-        Long a = 1231321321321L;
-        String s  = "55555555555";
-        System.out.println(Long.valueOf(s));
-    }
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         log.error("连接出错!");
