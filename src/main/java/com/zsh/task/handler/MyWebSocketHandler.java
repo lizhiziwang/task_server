@@ -1,6 +1,5 @@
 package com.zsh.task.handler;
 
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.zsh.task.config.ThreadPoolConfig;

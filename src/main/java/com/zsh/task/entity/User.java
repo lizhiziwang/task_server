@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Accessors(chain = true)
-@TableName(schema = "task",value = "user")
+@TableName(value = "user")
 public class User {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)

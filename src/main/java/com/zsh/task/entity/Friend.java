@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Accessors(chain = true)
-@TableName(schema = "task",value = "user_relation")
+@TableName(value = "user_relation")
 public class Friend {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)
@@ -30,4 +30,10 @@ public class Friend {
     private String user2Name;
     @TableField(value = "create_time",jdbcType = JdbcType.TIMESTAMP)
     private Date createTime;
+
+    @TableField(value = "update_time",jdbcType = JdbcType.TIMESTAMP)
+    private Date updateTime;
+    @TableField(value = "is_del",jdbcType = JdbcType.SMALLINT)
+    private Integer isDel;
+
 }

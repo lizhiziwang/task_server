@@ -4,20 +4,48 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zsh.task.cache.UserCache;
+import com.zsh.task.entity.LoginUser;
 import com.zsh.task.entity.User;
 import com.zsh.task.mapper.UserMapper;
 import com.zsh.task.service.UserService;
+import com.zsh.task.utils.JwtUtil;
 import com.zsh.task.vo.UserVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.util.*;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Resource
+    private AuthenticationManager authenticationManager;
+
+    @Resource
+    UserCache uc;
+    @Override
+    public Map<String,Object> doLogin(String name, String pwd) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(name,pwd);
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        if(Objects.isNull(authenticate)){
+            throw new RuntimeException("用户名或密码错误");
+        }
+        //使用userid生成token
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        String userId = loginUser.getUser().getId().toString();
+        String jwt = JwtUtil.createJWT(userId);
+        uc.put(userId,loginUser);
+        Map<String ,Object> re = new HashMap<>();
+
+        re.put("user",loginUser.getUser());
+        re.put("token",jwt);
+        return re;
+    }
 
     @Override
     public User getByName(String name) {

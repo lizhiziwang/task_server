@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * 自定义序列化规则 jackson
+ * */
 public class CustomDateSerializer extends JsonSerializer<Date> {
     public static final CustomDateSerializer instance= new CustomDateSerializer();
 
