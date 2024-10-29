@@ -9,12 +9,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.ibatis.type.JdbcType;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Accessors(chain = true)
 @TableName(value = "user_relation")
-public class Friend {
+public class Friend implements Serializable {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long id;

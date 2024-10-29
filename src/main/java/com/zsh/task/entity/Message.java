@@ -10,12 +10,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.ibatis.type.JdbcType;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Accessors(chain = true)
-@TableName(schema = "task",value = "message")
-public class Message {
+@TableName(value = "message")
+public class Message implements Serializable {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long id;
