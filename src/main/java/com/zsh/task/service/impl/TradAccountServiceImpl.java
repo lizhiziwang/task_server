@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.entity.TradAccount;
 import com.zsh.task.mapper.TradAccountMapper;
 import com.zsh.task.service.TradAccountService;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Map;
 
 @Service
 public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradAccount> implements TradAccountService {
@@ -32,16 +34,15 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
 
     @Override
     public Page<TradAccount> selectAccountPage(AccountSelectVo params) {
-        Page<TradAccount> page = new Page<>(params.getCurrent(),params.getSize());
+        Page<Map> page = new Page<>(params.getCurrent(),params.getSize());
 
         QueryWrapper<TradAccount> qw = new QueryWrapper<>();
-        if(!"ALL".equals(params.getGameType())&&!"MY".equals(params.getGameType())){
+        if((!"ALL".equals(params.getGameType()))&&(!"MY".equals(params.getGameType()))){
             qw.eq("game_type",params.getGameType());
         }else if("MY".equals(params.getGameType())){
             //todo 待实现
+            qw.eq("t2.user_id",LoginUserThreatContext.getUser().getId());
         }
-
-
 
         if(params.getPubUser() != null){
             qw.eq("pub_user",params.getPubUser());
@@ -64,6 +65,6 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
         }else {
             qw.orderByAsc(params.getOrderBy());
         }
-        return page(page,qw);
+        return baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
     }
 }

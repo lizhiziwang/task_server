@@ -30,7 +30,6 @@ public class GameController {
     }
     @PostMapping("/page")
     public Result<Page<TradAccount>> selectAccountPage(@RequestBody AccountSelectVo params){
-
         return Result.succeed(tas.selectAccountPage(params));
     }
     @PostMapping("/want")

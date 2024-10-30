@@ -1,5 +1,6 @@
 package com.zsh.task.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -38,12 +39,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //使用userid生成token
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         String userId = loginUser.getUser().getId().toString();
-        String jwt = JwtUtil.createJWT(userId);
+        StpUtil.setLoginId(loginUser.getUser().getId());
+//        System.out.println("satoken是否正常"+StpUtil.checkLogin());
+        String token = StpUtil.getTokenValue();
+
         uc.put(userId,loginUser);
         Map<String ,Object> re = new HashMap<>();
 
         re.put("user",loginUser.getUser());
-        re.put("token",jwt);
+        re.put("token",token);
         return re;
     }
 

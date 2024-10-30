@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zsh.task.entity.TradAccount;
 import com.zsh.task.vo.AccountSelectVo;
 
+import java.util.Map;
+
 public interface TradAccountService extends IService<TradAccount> {
     boolean insertSelective(TradAccount entity);
     boolean updateByIdSelective(TradAccount entity);

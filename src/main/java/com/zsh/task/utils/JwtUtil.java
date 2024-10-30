@@ -10,16 +10,17 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
 
+// 有问题，密钥格式要求，并发解析异常
 public class JwtUtil {
 
     //有效期为
     public static final Long JWT_TTL = 60 * 60 *1000L;// 60 * 60 *1000  一个小时
     //设置秘钥明文
     public static final String JWT_KEY = "sangeng";
-    public static SecretKey secretKey;
-    static {
-        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    }
+//    public static SecretKey secretKey;
+//    static {
+//        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+//    }
 
     public static String getUUID(){
         return UUID.randomUUID().toString().replaceAll("-", "");
@@ -71,7 +72,7 @@ public class JwtUtil {
                 .setSubject(subject)   // 主题  可以是JSON数据
                 .setIssuer("sg")     // 签发者
                 .setIssuedAt(now)      // 签发时间
-                .signWith(SignatureAlgorithm.HS256, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
+                .signWith(SignatureAlgorithm.HS256, generalKey()) //使用HS256对称加密算法签名, 第二个参数为秘钥
                 .setExpiration(expDate);
     }
 
@@ -98,9 +99,8 @@ public class JwtUtil {
      * @return
      */
     public static SecretKey generalKey() {
-        byte[] encodedKey = Base64.getDecoder().decode(JwtUtil.JWT_KEY);
-        return new SecretKeySpec(encodedKey, 0, encodedKey.length, "HS256");
-
+        byte[] encodedKey = JwtUtil.JWT_KEY.getBytes();
+        return new SecretKeySpec(encodedKey,  "HmacSHA256");
     }
 
     /**
@@ -113,9 +113,16 @@ public class JwtUtil {
     public static Claims parseJWT(String jwt) throws Exception {
 
         return Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(generalKey())
                 .parseClaimsJws(jwt)
                 .getBody();
     }
+
+    public static void main(String[] args) throws Exception {
+        Claims claims = parseJWT(createJWT("123456"));
+        String subject = claims.getSubject();
+        System.out.println(subject);
+    }
+
 
 }

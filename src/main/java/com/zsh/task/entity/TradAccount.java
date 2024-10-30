@@ -39,5 +39,6 @@ public class TradAccount implements Serializable {
     private Integer wantNum;
     @TableField(value = "show_img",jdbcType = JdbcType.VARCHAR)
     private String showImg;
-
+    @TableField(exist = false)
+    private Integer isWant;
 }

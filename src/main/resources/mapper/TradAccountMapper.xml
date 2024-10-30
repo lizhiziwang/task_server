@@ -18,8 +18,10 @@
     </resultMap>
 
     <sql id="base_column">
-        id,ceate_time,update_time,des_file,des_text,price,game_type,game_id,pub_user,is_exist,game_name,want_num
+        id,create_time as createTime,update_time updateTime,des_file desFile,des_text desText,price,game_type gameType,game_id gameId
+            ,pub_user pubUser,is_exist isExist,game_name gameName,want_num wantNum,show_img showImg
     </sql>
+
 
     <insert id="insertSelective" parameterType="com.zsh.task.entity.TradAccount">
         insert into trad_account
@@ -172,5 +174,11 @@
             </otherwise>
         </choose>
     </update>
+    <select id="selectPage" resultType="com.zsh.task.entity.TradAccount" >
+        select t1.id,t1.create_time as createTime,t1.update_time updateTime,t1.des_file desFile,t1.des_text desText,t1.price,t1.game_type gameType,t1.game_id gameId
+                 ,t1.pub_user pubUser,t1.is_exist isExist,t1.game_name gameName,t1.want_num wantNum,t1.show_img showImg
+             ,t2.is_want as isWant from trad_account t1 left join want_account t2 on (t1.id = t2.account_id and t2.user_id = #{userId,jdbcType=BIGINT})
+            ${ew.customSqlSegment}
+    </select>
 
 </mapper>
