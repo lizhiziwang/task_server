@@ -115,4 +115,6 @@ public class UserController {
 
         return Result.succeed(allFriend);
     }
+
+//    public Result<>
 }

@@ -41,7 +41,7 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
             qw.eq("game_type",params.getGameType());
         }else if("MY".equals(params.getGameType())){
             //todo 待实现
-            qw.eq("t2.user_id",LoginUserThreatContext.getUser().getId());
+            qw.eq("t1.pub_user",LoginUserThreatContext.getUser().getId());
         }
 
         if(params.getPubUser() != null){

@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import org.apache.ibatis.type.JdbcType;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @Accessors(chain = true)
@@ -16,9 +17,9 @@ public class TradAccount implements Serializable {
     @TableId
     private Long id;
     @TableField(value = "create_time",jdbcType = JdbcType.TIMESTAMP)
-    private String createTime;
+    private Date createTime;
     @TableField(value = "update_time",jdbcType = JdbcType.TIMESTAMP)
-    private String updateTime;
+    private Date updateTime;
     @TableField(value = "des_file",jdbcType = JdbcType.VARCHAR)
     private String desFile;
     @TableField(value = "des_text",jdbcType = JdbcType.VARCHAR)

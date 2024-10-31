@@ -7,7 +7,6 @@ import java.util.Map;
 
 public enum GameType {
 
-    ALL(0,"ALL","全部"),
     MOBA(1,"MOBA","MOBA"),
     FPS(2,"FPS","FPS"),
     ACT(3,"ACT","动作"),
@@ -20,8 +19,8 @@ public enum GameType {
     MG(10,"MG","音乐"),
     CG(11,"CG","休闲"),
     SG_(12,"SG_","体育"),
-    RG(13,"RG","竞速"),
-    MY(14,"MY","我的");
+    RG(13,"RG","竞速");
+
 
 
     final String code;
@@ -35,6 +34,16 @@ public enum GameType {
     }
     public String getCode(){
         return this.code;
+    }
+
+    public static GameType findByName(String name){
+        GameType[] values = values();
+        for (GameType item : values) {
+            if (item.alia.equals(name)){
+                return item;
+            }
+        }
+        throw new IllegalArgumentException("name is illegal");
     }
     public static List<Map<String,String>> toList(){
         List<Map<String,String>> RE = new ArrayList<>();
