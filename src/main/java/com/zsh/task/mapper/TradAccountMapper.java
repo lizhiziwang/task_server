@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
 
-@Mapper
 public interface TradAccountMapper extends BaseMapper<TradAccount> {
     int insertSelective(TradAccount entity);
     int updateByIdSelective(TradAccount entity);

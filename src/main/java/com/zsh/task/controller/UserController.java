@@ -1,24 +1,30 @@
 package com.zsh.task.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.Result;
 import com.zsh.task.entity.User;
+import com.zsh.task.entity.UserIdentity;
 import com.zsh.task.service.FriendService;
 import com.zsh.task.service.MessageService;
+import com.zsh.task.service.UserIdentityService;
 import com.zsh.task.service.UserService;
 import com.zsh.task.vo.UnreadVo;
 import com.zsh.task.vo.UserVo;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -30,7 +36,11 @@ public class UserController {
     @Resource
     FriendService fs;
     @Resource
+    PasswordEncoder encoder;
+    @Resource
     MessageService ms;
+    @Resource
+    UserIdentityService uis;
 
     @GetMapping("/login")
     public Result<Map<String, Object>> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -74,9 +84,32 @@ public class UserController {
         re.setIsOnline(0);
         re.setId(IdUtil.getSnowflakeNextId());
         re.setName(user.getName());
-        re.setPwd(user.getPwd());
+        re.setPwd(encoder.encode(user.getPwd()));
         return Result.succeed(us.save(re));
 
+    }
+
+    @PostMapping("/update")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Boolean> updateUser(@RequestBody User user){
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.ne("id",user.getId())
+                .eq("name",user.getName());
+
+        if (us.getOne(qw)!=null) {
+            return Result.failed("该用户名已存在！");
+        }
+        user.setUpdateTime(new Date())
+                .setPwd(encoder.encode(user.getPwd()));
+        //更改之后需要重新登录
+        StpUtil.logoutByLoginId(user.getId());
+        //更新角色
+        uis.updateByUserId(user.getIdentity(), user.getId());
+        return Result.succeed(us.updateById(user));
+    }
+    @PostMapping("/rem/{id}")
+    public Result<Boolean> removeUser(@PathVariable Long id){
+        return Result.succeed(us.removeById(id));
     }
     @GetMapping("/down/{id}")
     public Result<Boolean> downLine(@PathVariable Long id){
@@ -115,6 +148,16 @@ public class UserController {
 
         return Result.succeed(allFriend);
     }
+    @GetMapping("/toAdmin/{id}")
+    public Result<Boolean> toAdmin(@PathVariable Long id){
+        QueryWrapper<UserIdentity> qw = new QueryWrapper<>();
 
-//    public Result<>
+        qw.eq("user_id",id);
+        UserIdentity identity = uis.getOne(qw);
+
+        if (identity!=null && identity.getIdentity() == 0) {
+            return Result.succeed(true);
+        }
+        return Result.failed("权限不足，请联系管理员！");
+    }
 }

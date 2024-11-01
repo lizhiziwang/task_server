@@ -23,4 +23,6 @@ public interface UserService extends IService<User> {
     List<User> findFriends(Long userId,String userName);
 
     Map<Long,User> getTwoUserToMap(Long id1, Long id2);
+
+    boolean updateByPrimaryKeySelective(User user);
 }

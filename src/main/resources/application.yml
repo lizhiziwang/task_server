@@ -1,5 +1,5 @@
 server:
-  port: 8061
+  port: 8062
 # 日志打印配置
 mybatis-plus:
   configuration:
@@ -16,9 +16,9 @@ game:
     notVerify: /user/login,/user/register,/file,
   file:
     # 文件存放路径
-    #path: D:/task_server_game/upload/
+    path: D:/task_server_game/upload/
     # linux下路径
-    path: /tmp/task_server_game/upload/
+#    path: /tmp/task_server_game/upload/
 
 
 spring:
