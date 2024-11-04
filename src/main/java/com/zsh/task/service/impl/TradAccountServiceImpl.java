@@ -11,8 +11,10 @@ import com.zsh.task.service.TradAccountService;
 import com.zsh.task.vo.AccountSelectVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,6 +30,7 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean addWantNum(Long id,boolean isAdd) {
         return baseMapper.addOrLeWantNum(id,isAdd)>0;
     }
@@ -66,5 +69,10 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
             qw.orderByAsc(params.getOrderBy());
         }
         return baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
+    }
+
+    @Override
+    public double getPricesByIds(List<Long> ids) {
+        return baseMapper.getPricesByIds(ids);
     }
 }

@@ -4,16 +4,17 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.cache.UserCache;
+import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
+import com.zsh.task.entity.Friend;
+import com.zsh.task.entity.FriendRequest;
 import com.zsh.task.entity.User;
 import com.zsh.task.entity.UserIdentity;
-import com.zsh.task.service.FriendService;
-import com.zsh.task.service.MessageService;
-import com.zsh.task.service.UserIdentityService;
-import com.zsh.task.service.UserService;
+import com.zsh.task.service.*;
 import com.zsh.task.vo.UnreadVo;
 import com.zsh.task.vo.UserVo;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,8 @@ public class UserController {
     MessageService ms;
     @Resource
     UserIdentityService uis;
+    @Resource
+    FriendRequestService frs;
 
     @GetMapping("/login")
     public Result<Map<String, Object>> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -88,7 +91,7 @@ public class UserController {
         return Result.succeed(us.save(re));
 
     }
-
+    // 编辑用户
     @PostMapping("/update")
     @Transactional(rollbackFor = Exception.class)
     public Result<Boolean> updateUser(@RequestBody User user){
@@ -107,10 +110,12 @@ public class UserController {
         uis.updateByUserId(user.getIdentity(), user.getId());
         return Result.succeed(us.updateById(user));
     }
+    // 删除用户
     @PostMapping("/rem/{id}")
     public Result<Boolean> removeUser(@PathVariable Long id){
         return Result.succeed(us.removeById(id));
     }
+    //用户下线,退出登录
     @GetMapping("/down/{id}")
     public Result<Boolean> downLine(@PathVariable Long id){
         return Result.succeed(us.downLine(id));
@@ -129,7 +134,7 @@ public class UserController {
 
     /**
      * @param name 查询用户名,传null时会查询当前用户的所有好友
-     * @param userId 当前用户ID
+     * @param userId 当前用户ID--------------获取当前user的所有friend
      * */
     @GetMapping("/friends/{userId}")
     public Result<List<User>> getAllFriend(@PathVariable Long userId,
@@ -148,6 +153,7 @@ public class UserController {
 
         return Result.succeed(allFriend);
     }
+    // 验证admin
     @GetMapping("/toAdmin/{id}")
     public Result<Boolean> toAdmin(@PathVariable Long id){
         QueryWrapper<UserIdentity> qw = new QueryWrapper<>();
@@ -159,5 +165,52 @@ public class UserController {
             return Result.succeed(true);
         }
         return Result.failed("权限不足，请联系管理员！");
+    }
+    // 添加申请
+    @PostMapping("/fri/{applicant}")
+    public Result<Boolean> addRequest(@PathVariable Long applicant,
+                                      @RequestParam Long receiver){
+        QueryWrapper<FriendRequest> qw = new QueryWrapper<>();
+        qw.eq("applicant",applicant)
+                .eq("receiver",receiver);
+        FriendRequest one = frs.getOne(qw);
+        if (one!= null){
+            return Result.succeed(false,"已申请，请等待对方同意！");
+        }
+
+        return Result.succeed(frs.addRequest(applicant,receiver));
+    }
+
+    //同意申请,发生异常回滚
+    @PostMapping("/fri/agree/{applicant}")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Boolean> agreeRequest(@PathVariable Long applicant){
+        Long currentUserId = LoginUserThreatContext.getUser().getId();
+
+        UpdateWrapper<FriendRequest> uw = new UpdateWrapper<>();
+        uw.set("is_agree",1).
+                set("update_time",new Date());
+        uw.eq("applicant",applicant)
+                        .eq("receiver",currentUserId);
+
+        frs.update(uw);
+
+        //添加好友关系
+        Friend f = new Friend();
+        f.setId(IdUtil.getSnowflakeNextId())
+                .setUser1Id(applicant)
+                .setUser2Id(currentUserId)
+                .setCreateTime(new Date())
+                .setUpdateTime(new Date());
+        fs.save(f);
+
+        return Result.succeed(true);
+    }
+
+    //
+    @GetMapping("/ava/{id}")
+    public Result<User> getava(@PathVariable Long id){
+        User byId = us.getById(id);
+        return Result.succeed(byId);
     }
 }

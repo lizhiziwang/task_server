@@ -181,4 +181,11 @@
             ${ew.customSqlSegment}
     </select>
 
+    <select id="getPricesByIds" resultType="java.lang.Double">
+        select sum(price) as "sum" from trad_account where id in
+                                                     <foreach collection="ids" item="item" open="(" separator="," close=")">
+                                                         #{item}
+                                                     </foreach>
+    </select>
+
 </mapper>

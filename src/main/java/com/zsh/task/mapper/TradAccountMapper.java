@@ -8,6 +8,7 @@ import com.zsh.task.entity.TradAccount;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 public interface TradAccountMapper extends BaseMapper<TradAccount> {
@@ -18,4 +19,5 @@ public interface TradAccountMapper extends BaseMapper<TradAccount> {
                        @Param("isAdd")boolean isAdd);
 
     Page<TradAccount> selectPage(@Param("userId") Long userId, Page<?> page, @Param(Constants.WRAPPER)QueryWrapper<TradAccount> qw);
+    Double getPricesByIds(@Param("ids") List<Long> ids);
 }

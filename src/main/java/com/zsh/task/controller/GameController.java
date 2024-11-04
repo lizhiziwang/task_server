@@ -2,6 +2,7 @@ package com.zsh.task.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
 import com.zsh.task.constant.GameType;
 import com.zsh.task.entity.TradAccount;
@@ -82,7 +83,9 @@ public class GameController {
         ta.setGameType(GameType.findByName(ta.getGameType()).name());
         if (ta.getId() == null) {
             ta.setId(IdUtil.getSnowflakeNextId())
-                    .setCreateTime(new Date());
+                    .setWantNum(0)
+                    .setCreateTime(new Date())
+                    .setPubUser(LoginUserThreatContext.getUser().getId());
 
         }
         return Result.succeed(tas.saveOrUpdate(ta.setUpdateTime(new Date())));
