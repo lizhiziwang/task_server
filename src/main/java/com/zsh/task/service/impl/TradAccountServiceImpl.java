@@ -75,4 +75,9 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
     public double getPricesByIds(List<Long> ids) {
         return baseMapper.getPricesByIds(ids);
     }
+
+    @Override
+    public void updateExcite(List<TradAccount> items) {
+        baseMapper.updateExcite(items);
+    }
 }

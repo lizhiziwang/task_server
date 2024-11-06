@@ -156,4 +156,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean updateByPrimaryKeySelective(User user) {
         return baseMapper.updateByPrimaryKeySelective(user)>0;
     }
+
+    @Override
+    public boolean purseUpOrDown(double var1, Long id) {
+        return baseMapper.purseUpOrDown(var1,id)>0;
+    }
 }

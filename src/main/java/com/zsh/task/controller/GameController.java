@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
 import com.zsh.task.constant.GameType;
+import com.zsh.task.entity.MoneyRecord;
 import com.zsh.task.entity.TradAccount;
+import com.zsh.task.service.MoneyRecordService;
 import com.zsh.task.service.TradAccountService;
 import com.zsh.task.service.WantAccountService;
 import com.zsh.task.vo.AccountSelectVo;
@@ -30,6 +32,8 @@ public class GameController {
     WantAccountService was;
     @Resource
     TradAccountService tas;
+    @Resource
+    MoneyRecordService mrs;
     @Value("${game.file.path}")
     String filePath;
     @GetMapping("/type")
@@ -84,10 +88,26 @@ public class GameController {
         if (ta.getId() == null) {
             ta.setId(IdUtil.getSnowflakeNextId())
                     .setWantNum(0)
+                    .setIsExist(1)
                     .setCreateTime(new Date())
                     .setPubUser(LoginUserThreatContext.getUser().getId());
 
         }
         return Result.succeed(tas.saveOrUpdate(ta.setUpdateTime(new Date())));
     }
+    @PostMapping("/money/add")
+    public Result<MoneyRecord> save(@RequestParam(name = "m") Double m,
+                                    @RequestParam(name = "type") String type){
+        Long cuUserId = LoginUserThreatContext.getUser().getId();
+        Long id = IdUtil.getSnowflakeNextId();
+        MoneyRecord mr = new MoneyRecord();
+        mr.setId(id)
+                .setOperator(cuUserId)
+                .setOperatorAmount(m)
+                .setOperatorType(type)
+                .setCreateTime(new Date())
+                .setUpdateTime(new Date());
+        return mrs.save(mr)?Result.succeed(mr):Result.failed("充值失败！请稍后再试");
+    }
+
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zsh.task.constant.OrderState;
 import com.zsh.task.entity.Order;
 import com.zsh.task.mapper.OrderMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         var.setId(IdUtil.getSnowflakeNextId())
                 .setCreateTime(new Date())
                 .setSum(sum)
+                .setState(OrderState.NOPAID.code)
                 .setCreateUser(userId)
                 .setUpdateTime(new Date())
                 .setCommodityList(JSONArray.parseArray(JSON.toJSONString(accIds)).toJSONString());

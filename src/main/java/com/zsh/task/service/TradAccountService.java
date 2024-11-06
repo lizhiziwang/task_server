@@ -16,4 +16,6 @@ public interface TradAccountService extends IService<TradAccount> {
     Page<TradAccount> selectAccountPage(AccountSelectVo params);
 
     double getPricesByIds(List<Long> ids);
+    //更新是否存在状态
+    void updateExcite(List<TradAccount> items);
 }

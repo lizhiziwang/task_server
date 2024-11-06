@@ -188,4 +188,16 @@
                                                      </foreach>
     </select>
 
+    <update id="updateExcite" parameterType="java.util.List">
+        update trad_account set
+                                is_exist =
+                                    <foreach collection="items" open="CASE" close="END" separator=" \n" item="item">
+                                        when id = #{item.id} then #{item.isExist}
+                                    </foreach>
+            where id in
+                    <foreach collection="items" open="(" close=")" separator="," item="item" >
+                        #{item.id}
+                    </foreach>
+    </update>
+
 </mapper>

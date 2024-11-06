@@ -60,7 +60,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 //            filterChain.doFilter(request, response);
                 JSONObject re = new JSONObject();
                 re.put("code",403);
-                re.put("data","请携带token访问！");
+                re.put("data","请携带token访问！请求的接口："+request.getRequestURI());
                 re.put("message","失败");
                 response.setStatus(403);
                 response.setContentType("application/json;charset=UTF-8");

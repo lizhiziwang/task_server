@@ -13,7 +13,8 @@ public enum OrderState {
     CANCELED(4,"已取消","CANCELED"),
     REFUNDING(5,"退款中","REFUNDING"),
     REFUNDED(6,"已退款","REFUNDED"),
-    COMPLETE(7,"已完成","COMPLETE");
+    COMPLETE(7,"已完成","COMPLETE"),
+    UNDELIVER(8,"待发货","UNDELIVER");
 
     public int num;
     public String name;

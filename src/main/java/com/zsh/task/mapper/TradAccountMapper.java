@@ -20,4 +20,5 @@ public interface TradAccountMapper extends BaseMapper<TradAccount> {
 
     Page<TradAccount> selectPage(@Param("userId") Long userId, Page<?> page, @Param(Constants.WRAPPER)QueryWrapper<TradAccount> qw);
     Double getPricesByIds(@Param("ids") List<Long> ids);
+    int updateExcite(@Param("items") List<TradAccount> items);
 }

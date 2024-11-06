@@ -23,4 +23,5 @@ public interface UserMapper extends BaseMapper<User> {
                                    @Param("id2") Long id2);
 
     Page<User> myPage(Page<User> page , @Param(Constants.WRAPPER)QueryWrapper<User> qw);
+    int purseUpOrDown(@Param("var1")double var1,@Param("id")Long id);
 }

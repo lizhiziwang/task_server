@@ -56,13 +56,15 @@
             <if test="createUser != null">
                 #{createUser,jdbcType=TIMESTAMP},
             </if>
-            <if test="update_time != null">
-                #{update_time,jdbcType=TIMESTAMP},
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
             </if>
             <if test="sum != null">
                 #{sum,jdbcType=DOUBLE},
             </if>
-
         </trim>
     </insert>
 

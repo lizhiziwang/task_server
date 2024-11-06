@@ -213,4 +213,10 @@ public class UserController {
         User byId = us.getById(id);
         return Result.succeed(byId);
     }
+    @GetMapping("/current")
+    public Result<User> current(){
+        Long id = LoginUserThreatContext.getUser().getId();
+        User byId = us.getById(id);
+        return Result.succeed(byId);
+    }
 }
