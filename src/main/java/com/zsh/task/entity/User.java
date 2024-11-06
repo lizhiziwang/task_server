@@ -9,12 +9,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.ibatis.type.JdbcType;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Accessors(chain = true)
-@TableName(schema = "task",value = "user")
-public class User {
+@TableName(value = "user")
+public class User implements Serializable {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long id;
@@ -40,9 +41,27 @@ public class User {
     private Date birthday;
     @TableField(value = "update_time",jdbcType = JdbcType.TIMESTAMP)
     private Date updateTime;
+    @TableField(value = "idiograph",jdbcType = JdbcType.VARCHAR)
+    private String idiograph;
+    @TableField(value = "purse",jdbcType = JdbcType.DOUBLE)
+    private Double purse;
 
     @TableField(exist = false)
     private Integer mesCount;
     @TableField(exist = false)
     private String lastMess;
+    //多表连接用
+    @TableField(exist = false)
+    private Integer identity;
+
+
+    // vo
+    @TableField(exist = false)
+    private String sex;
+    // vo
+    @TableField(exist = false)
+    private String ruler;
+    // vo
+    @TableField(exist = false)
+    private String status;
 }

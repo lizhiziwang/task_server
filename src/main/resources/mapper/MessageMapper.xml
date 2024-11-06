@@ -13,7 +13,7 @@
 
 
     <select id="selectUnread" parameterType="java.util.List" resultType="com.zsh.task.vo.UnreadVo">
-     select user1_id as sendUser,count(1) as count from task.message
+     select user1_id as sendUser,count(1) as count from message
      where is_read = 0 and user2_id = #{userId,jdbcType=BIGINT}
 		 GROUP BY user1_id
     </select>
@@ -21,7 +21,7 @@
 
 
     <select id="getMessage" resultType="com.zsh.task.entity.Message">
-        select * from task.message where
+        select * from message where
             (user1_id = #{id1} and user2_id = #{id2}) or (user1_id = #{id2} and user2_id = #{id1})
             and send_time >= current_date order By send_time Asc
     </select>

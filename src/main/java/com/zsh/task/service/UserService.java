@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService extends IService<User> {
+
+    Map<String, Object> doLogin(String name, String pwd);
     User getByName(String name);
     /**
      * @param userId
@@ -21,4 +23,8 @@ public interface UserService extends IService<User> {
     List<User> findFriends(Long userId,String userName);
 
     Map<Long,User> getTwoUserToMap(Long id1, Long id2);
+
+    boolean updateByPrimaryKeySelective(User user);
+
+    boolean purseUpOrDown(double var1,Long id);
 }

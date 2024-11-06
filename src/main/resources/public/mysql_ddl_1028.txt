@@ -1,0 +1,56 @@
+CREATE TABLE `trad_account` (
+  `id` bigint NOT NULL,
+  `ceate_time` timestamp NOT NULL,
+  `update_time` timestamp NOT NULL,
+  `des_file` varchar(512) DEFAULT NULL COMMENT '描述文件',
+  `des_text` varchar(512) DEFAULT NULL COMMENT '描述文字',
+  `price` double DEFAULT NULL COMMENT '期望交易价格',
+  `geme_type` varchar(32) DEFAULT NULL COMMENT '游戏类型',
+  `game_id` varchar(255) DEFAULT NULL COMMENT '游戏账号',
+  `pub_user` bigint DEFAULT NULL COMMENT '发布用户',
+  `is_exist` smallint DEFAULT NULL COMMENT '是否存在',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `message` (
+  `id` bigint NOT NULL,
+  `send_time` timestamp NOT NULL,
+  `context` varchar(512) DEFAULT NULL,
+  `user1_id` bigint NOT NULL,
+  `user2_id` bigint NOT NULL,
+  `type` varchar(64) DEFAULT NULL,
+  `is_read` smallint DEFAULT NULL COMMENT '0-未读，1-已读',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `user` (
+  `id` bigint NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `pwd` varchar(255) NOT NULL,
+  `alia` varchar(255) DEFAULT NULL COMMENT '别名',
+  `avatar` varchar(255) DEFAULT NULL COMMENT '头像',
+  `is_online` smallint DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `gender` smallint DEFAULT NULL COMMENT '性别0-女 1 男',
+  `birthday` timestamp NULL DEFAULT NULL,
+  `update_time` timestamp NULL DEFAULT NULL,
+  `idiograph` varchar(255) DEFAULT NULL COMMENT '个人签名',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `user` (
+  `id` bigint NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `pwd` varchar(255) NOT NULL,
+  `alia` varchar(255) DEFAULT NULL COMMENT '别名',
+  `avatar` varchar(255) DEFAULT NULL COMMENT '头像',
+  `is_online` smallint DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `gender` smallint DEFAULT NULL COMMENT '性别0-女 1 男',
+  `birthday` timestamp NULL DEFAULT NULL,
+  `update_time` timestamp NULL DEFAULT NULL,
+  `idiograph` varchar(255) DEFAULT NULL COMMENT '个人签名',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

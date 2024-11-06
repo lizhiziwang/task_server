@@ -13,7 +13,7 @@ public class UserVo {
 //    private String createTime;
     private String phone;
     private Integer gender;
-    private String birthdayStart;
-    private String birthdayEnd;
+    private String startTime;
+    private String endTime;
 //    private String updateTime;
 }

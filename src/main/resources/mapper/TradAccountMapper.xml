@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zsh.task.mapper.TradAccountMapper">
+    <resultMap id="BaseResultMap" type="com.zsh.task.entity.TradAccount">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <id column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <id column="des_file" jdbcType="VARCHAR" property="desFile" />
+        <id column="des_text" jdbcType="VARCHAR" property="desText" />
+        <id column="price" jdbcType="DOUBLE" property="price" />
+        <id column="game_type" jdbcType="VARCHAR" property="gameType" />
+        <id column="game_id" jdbcType="VARCHAR" property="gameId" />
+        <id column="pub_user" jdbcType="BIGINT" property="pubUser" />
+        <id column="is_exist" jdbcType="SMALLINT" property="isExist" />
+        <id column="game_name" jdbcType="VARCHAR" property="gameName" />
+        <id column="want_num" jdbcType="INTEGER" property="wantNum" />
+        <id column="show_img" jdbcType="VARCHAR" property="showImg" />
+    </resultMap>
+
+    <sql id="base_column">
+        id,create_time as createTime,update_time updateTime,des_file desFile,des_text desText,price,game_type gameType,game_id gameId
+            ,pub_user pubUser,is_exist isExist,game_name gameName,want_num wantNum,show_img showImg
+    </sql>
+
+
+    <insert id="insertSelective" parameterType="com.zsh.task.entity.TradAccount">
+        insert into trad_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="desFile != null">
+                des_file,
+            </if>
+            <if test="desText != null">
+                des_text,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="gameType != null">
+                game_type,
+            </if>
+            <if test="gameId != null">
+                game_id,
+            </if>
+            <if test="pubUser != null">
+                pub_user,
+            </if>
+            <if test="isExist != null">
+                is_exist,
+            </if>
+            <if test="gameName != null">
+                game_name,
+            </if>
+            <if test="wantNum != null">
+                want_num,
+            </if>
+            <if test="showImg != null">
+                show_img,
+            </if>
+        </trim>
+         values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="desFile != null">
+                #{desFile,jdbcType=VARCHAR},
+            </if>
+            <if test="desText != null">
+                #{desText,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="gameType != null">
+                #{gameType,jdbcType=VARCHAR},
+            </if>
+            <if test="gameId != null">
+                #{gameId,jdbcType=VARCHAR},
+            </if>
+            <if test="pubUser != null">
+                #{pubUser,jdbcType=BIGINT},
+            </if>
+            <if test="isExist != null">
+                #{isExist,jdbcType=SMALLINT},
+            </if>
+            <if test="gameName != null">
+                #{gameName,jdbcType=VARCHAR},
+            </if>
+            <if test="wantNum != null">
+                #{wantNum,jdbcType=INTEGER},
+            </if>
+            <if test="showImg != null">
+                #{showImg,jdbcType=VARCHAR},
+            </if>
+        </trim>
+
+    </insert>
+
+    <update id="updateByIdSelective" parameterType="com.zsh.task.entity.TradAccount">
+        update trad_account
+            <set>
+                <if test="createTime != null">
+                    create_time= #{createTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="updateTime != null">
+                    update_time = #{updateTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="desFile != null">
+                    des_file = #{desFile,jdbcType=VARCHAR},
+                </if>
+                <if test="desText != null">
+                    des_text = #{desText,jdbcType=VARCHAR},
+                </if>
+                <if test="price != null">
+                    price = #{price,jdbcType=DOUBLE},
+                </if>
+                <if test="gameType != null">
+                    game_type = #{gameType,jdbcType=VARCHAR},
+                </if>
+                <if test="gameId != null">
+                    game_id = #{gameId,jdbcType=VARCHAR},
+                </if>
+                <if test="pubUser != null">
+                    pub_user = #{pubUser,jdbcType=BIGINT},
+                </if>
+                <if test="isExist != null">
+                    is_exist = #{isExist,jdbcType=SMALLINT},
+                </if>
+                <if test="gameName != null">
+                    game_name = #{gameName,jdbcType=VARCHAR},
+                </if>
+                <if test="wantNum != null">
+                    want_num = #{wantNum,jdbcType=INTEGER},
+                </if>
+                <if test="showImg != null">
+                    show_img = #{showImg,jdbcType=VARCHAR},
+                </if>
+            </set>
+            where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="addOrLeWantNum">
+        <choose>
+            <when test="isAdd">
+                update trad_account set
+                want_num = want_num + 1
+                where  id = #{id,jdbcType=BIGINT}
+            </when>
+            <when test="!isAdd">
+                update trad_account set
+                want_num = want_num - 1
+                where  id = #{id,jdbcType=BIGINT}
+            </when>
+            <otherwise>
+                <!-- 这里可以添加默认情况的处理逻辑，比如设置want_num为一个特定值 -->
+                update trad_account set
+                want_num = 0
+                where  id = #{id,jdbcType=BIGINT}
+            </otherwise>
+        </choose>
+    </update>
+    <select id="selectPage" resultType="com.zsh.task.entity.TradAccount" >
+        select t1.id,t1.create_time as createTime,t1.update_time updateTime,t1.des_file desFile,t1.des_text desText,t1.price,t1.game_type gameType,t1.game_id gameId
+                 ,t1.pub_user pubUser,t1.is_exist isExist,t1.game_name gameName,t1.want_num wantNum,t1.show_img showImg
+             ,t2.is_want as isWant from trad_account t1 left join want_account t2 on (t1.id = t2.account_id and t2.user_id = #{userId,jdbcType=BIGINT})
+            ${ew.customSqlSegment}
+    </select>
+
+    <select id="getPricesByIds" resultType="java.lang.Double">
+        select sum(price) as "sum" from trad_account where id in
+                                                     <foreach collection="ids" item="item" open="(" separator="," close=")">
+                                                         #{item}
+                                                     </foreach>
+    </select>
+
+    <update id="updateExcite" parameterType="java.util.List">
+        update trad_account set
+                                is_exist =
+                                    <foreach collection="items" open="CASE" close="END" separator=" \n" item="item">
+                                        when id = #{item.id} then #{item.isExist}
+                                    </foreach>
+            where id in
+                    <foreach collection="items" open="(" close=")" separator="," item="item" >
+                        #{item.id}
+                    </foreach>
+    </update>
+
+</mapper>

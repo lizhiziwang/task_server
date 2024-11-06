@@ -9,12 +9,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.ibatis.type.JdbcType;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Accessors(chain = true)
-@TableName(schema = "task",value = "user_relation")
-public class Friend {
+@TableName(value = "user_relation")
+public class Friend implements Serializable {
     @TableId
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long id;
@@ -30,4 +31,10 @@ public class Friend {
     private String user2Name;
     @TableField(value = "create_time",jdbcType = JdbcType.TIMESTAMP)
     private Date createTime;
+
+    @TableField(value = "update_time",jdbcType = JdbcType.TIMESTAMP)
+    private Date updateTime;
+    @TableField(value = "is_del",jdbcType = JdbcType.SMALLINT)
+    private Integer isDel;
+
 }

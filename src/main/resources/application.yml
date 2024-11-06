@@ -1,23 +1,35 @@
 server:
-  port: 8061
+  port: 8062
 # 日志打印配置
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #logging:
 #  level:
 #    root: info
 #    com.zsh.task.mapper.UserMapper: info
 #    com.zsh.task.mapper.MessageMapper: info
 
+game:
+  url:
+    # ","分割，不需要进行鉴权的接口
+    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay
+  file:
+    # 文件存放路径
+    path: D:/task_server_game/upload/
+    # linux下路径
+#    path: /tmp/task_server_game/upload/
+
 
 spring:
+  main:
+    allow-circular-references: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:postgresql://127.0.0.1:5432/spa_db?reWriteBatchedInserts=true
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.jdbc.Driver
     password: 123456
-    username: postgres
+    username: root
     druid:
       #SpringBoot因为默认是hikari数据源所以对于其他数据源默认是不注入这些属性的，需要手动配置
       #druid数据源专有配置
@@ -35,18 +47,28 @@ spring:
       poolPreparedStatements: true
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
-sa-token:
-  # token 名称（同时也是 cookie 名称）
-  token-name: satoken
-  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
-  timeout: 2592000
-  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
-  active-timeout: -1
-  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
-  is-concurrent: true
-  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
-  is-share: true
-  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
-  token-style: uuid
-  # 是否输出操作日志
-  is-log: false
+  sa-token:
+    # token 名称（同时也是 cookie 名称）
+    token-name: satoken
+    # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+    timeout: 2592000
+    # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+    active-timeout: -1
+    # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+    is-concurrent: true
+    # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+    is-share: true
+    # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+    token-style: uuid
+    # 是否输出操作日志
+    is-log: false
+
+jwt:
+  secret: asffeegrthtkygfdfwaerfdbgtyugfrtdgbvythfgrytfhnbrtdjhrfdshusgviwe0fu94509t8arfthtyijkujhmdhftykgyu
+  expiration: 86400000 # 1天的毫秒数
+# 支付相关
+alipay:
+  notifyUrl: http://localhost:8062/alipay/notify
+  appId: 9021000125669321
+  appPrivateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDlZRoZ8aL6Pb08qdKjPWEfiGnJnSZkufZaLCC786DjJtzkexxWRvzjj7Tp7YitztQDq5N6yZDPIluQdVn5NDWDMB5cTvoXxIg0UTrg+E3qhrX1r6zIFbVbODfq7SScuiI05DE9idYhuAx2irtuUASEr87kKOe4MboP1+/bng9txY7a1zsLvr6J9p656/iYR3/SpPKwUtPgl7cnFn90snupxoSBRl/v/fdzizp1B11nFuJennR0NN69GRRUxRcy0pdtSqVELz2eJUqpHVSJk8mg5O0cYtMwf5RQPVp9mVmOmrLGO2psuE5eTXiSgUrbY5TMbiNGicR5vtnsnItQCRZfAgMBAAECggEAFSivMKduLgDV3KuZZz85Hyx4/YTGTtIsXALn/g4pz+n8xAJrCbZAi0jtGgqz6bxDKBeCYfgHqGN16Kw6YVckfHZKxp7uSJTzL0gy0x90KGbGj+PlXwtJkCFuXvgCwYYVs6U8uX1mR/PvClwfj7xHvmls/vSa8w17KQz07d/1cl1y6eDljPN0THTnh8oroR2pNte3ypH+q6mA/lI+Q7HbKajsHo5WLTAaXuLR0Rl/UpctfGHIUmDcUG9oRDI3uFBz7rfME7hYRstgsiOliHuLXfBx8lszyabkF0kK668F87qC5ObYD/Ycy8VYEQtAr3/7jf7oem7cAXsNTXtpro97OQKBgQD3WrVbX/EtJWqAqWsynKYW1hGkQ7jcimJ7rlE5CVDc8KpvGO/hggVr75FN1xdYxX5bDtCfyRv6jefHUdeoeSrl+320c/XK/cJ2AsrqvbXKps9VKp/HcMtuVjKZp4qSA1s2rP1sx0viARfVGK+eV2aWmVLkhQHTLkyFP1hTje2TqwKBgQDtabIC/yVN+hK+4HMTrmp4KymIry7lxsOqsBGFWk8/HpMNK+3Gp6NxLMWCPVN6ZnSSK/ciM+B+1J6ooRSmuwC+JFsHyXkZOMXHlZRdVxuJGViNXZOGL6VWSh5PT1kIZA402ZpFWfM7CEszfRD/Rq5OXgddBWb59jzlO94mT8IUHQKBgQCx60kv5J7xvkwRJ8u3p/2/x1MBOMUrvU6BcC10PUMw6Ntu9hz1tDR6IuP9fY2JiOUOUmW1yU6atp/VOwVIZX951Z/hwNc3n7fUcsXKe5LbpYjU1cgACR4Ky22yIFUIGenuNhhDukbW1bpyyULpPizIfpilTxa09ESOQ7Ygw6Hz6QKBgFt8DTKGazOfF7Yh+3YsEa74wup+xw2YCDIv4rCGWl8yQuwib1/LnXmxDPLg+tgBvw3Mj1DIuMtm1zSXzcNp8CFVFRbtFhMYA26jPyawuFWeRLdExeJBXe7gZMmfA+nt1GOdLotm3Al1arUOjowwCl78cM3xlPrhXhnfdf1BYsIpAoGAKoApJ1Ho3yKWY+exQBR04D+VRlp12/0P6XCLxjcVfSfAtXEoixp+qLc7ljSKpkKknwnk27OsWFbY/lN/rLHMPY/SybWzW1L/dRLBaQLePQtRbuncrL0N3e0E+OPt7gHDFKiv5oqX9Wz0+LMLgEEMw0bBQ0RLlVYfLWL0gYorjyw=
+  alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtGK2CoSfD6rnZUmghJ6REwwAufI7fewT6ofHBZ2DkPRZAK7Wg1DZ1FwLRYPEH8ElrC9nSLm/1/pUqv2ibQdIgb+++PkIv0EPeAKvBCULubbqTSxlIfQSgMEb7RIlNBkuMsL/ramPw5UQDCi9HMkVdBBJkTPo5/Dxti+xTBaosHMGSVdEWfW/07WlwsTwL0NvcqbuAi7zIRm92a11R222kQ0/toWRIOPcTGUuEylMRf1WlPxrfvvYXvrXp46HqZ995xlMMYozI79Bdusxxl4a5imofmuVY/QviddP15Ux/q/Pluy7RX8Hc8CbPX5+EhNxzSrpu7dHEv5Gio3ALUcf7wIDAQAB

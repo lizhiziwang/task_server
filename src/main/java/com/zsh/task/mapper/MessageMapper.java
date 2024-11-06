@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface MessageMapper extends BaseMapper<Message> {
     List<UnreadVo> selectUnread(@Param("userId") Long userId);
     List<Message> getMessage(@Param("id1") Long id1,
