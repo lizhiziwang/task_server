@@ -27,4 +27,6 @@ public class FriendRequest implements Serializable {
     private Date createTime;
     @TableField(value = "update_time",jdbcType = JdbcType.TIMESTAMP)
     private Date updateTime;
+    @TableField(value = "reason",jdbcType = JdbcType.VARCHAR)
+    private String reason;
 }

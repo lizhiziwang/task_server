@@ -46,8 +46,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         uc.put(userId,loginUser);
         Map<String ,Object> re = new HashMap<>();
+        User user = loginUser.getUser();
+        user.setIsOnline(1);
+        updateByPrimaryKeySelective(user);
 
-        re.put("user",loginUser.getUser());
+        re.put("user",user);
         re.put("token",token);
         return re;
     }

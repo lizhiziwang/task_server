@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.print.attribute.standard.MediaSize;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
@@ -102,13 +103,26 @@ public class UserController {
         if (us.getOne(qw)!=null) {
             return Result.failed("该用户名已存在！");
         }
-        user.setUpdateTime(new Date())
-                .setPwd(encoder.encode(user.getPwd()));
+        user.setUpdateTime(new Date());
+        if(org.apache.commons.lang3.StringUtils.isNoneBlank(user.getPwd())) {
+            user.setPwd(encoder.encode(user.getPwd()));
+        }
         //更改之后需要重新登录
         StpUtil.logoutByLoginId(user.getId());
         //更新角色
-        uis.updateByUserId(user.getIdentity(), user.getId());
-        return Result.succeed(us.updateById(user));
+        if (user.getIdentity() != null){
+            uis.updateByUserId(user.getIdentity(), user.getId());
+        }
+        return Result.succeed(us.updateByPrimaryKeySelective(user));
+    }
+    //更新收货信息
+    @PostMapping("/update2")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Boolean> updateUser2(@RequestBody User user){
+
+        user.setUpdateTime(new Date());
+
+        return Result.succeed(us.updateByPrimaryKeySelective(user));
     }
     // 删除用户
     @PostMapping("/rem/{id}")
@@ -169,7 +183,8 @@ public class UserController {
     // 添加申请
     @PostMapping("/fri/{applicant}")
     public Result<Boolean> addRequest(@PathVariable Long applicant,
-                                      @RequestParam Long receiver){
+                                      @RequestParam Long receiver,
+                                      @RequestParam(name = "mes") String mes){
         QueryWrapper<FriendRequest> qw = new QueryWrapper<>();
         qw.eq("applicant",applicant)
                 .eq("receiver",receiver);
@@ -178,16 +193,25 @@ public class UserController {
             return Result.succeed(false,"已申请，请等待对方同意！");
         }
 
-        return Result.succeed(frs.addRequest(applicant,receiver));
+        return Result.succeed(frs.addRequest(applicant,receiver,mes));
     }
 
     //同意申请,发生异常回滚
-    @PostMapping("/fri/agree/{applicant}")
+    @PostMapping("/fri/req/{applicant}/{dif}")
     @Transactional(rollbackFor = Exception.class)
-    public Result<Boolean> agreeRequest(@PathVariable Long applicant){
+    public Result<Boolean> agreeRequest(@PathVariable Long applicant, @PathVariable Integer dif){
         Long currentUserId = LoginUserThreatContext.getUser().getId();
 
         UpdateWrapper<FriendRequest> uw = new UpdateWrapper<>();
+        //拒绝
+        if(dif == 0){
+            uw.set("is_agree",0).
+                    set("update_time",new Date());
+            uw.eq("applicant",applicant)
+                    .eq("receiver",currentUserId);
+            return Result.succeed(frs.update(uw));
+        }
+        //同意
         uw.set("is_agree",1).
                 set("update_time",new Date());
         uw.eq("applicant",applicant)
@@ -205,6 +229,12 @@ public class UserController {
         fs.save(f);
 
         return Result.succeed(true);
+    }
+
+    @GetMapping("/get/fre")
+    public Result<?> getFriendRe(){
+        Long userId = LoginUserThreatContext.getUser().getId();
+        return Result.succeed(frs.getNoAgreeRequest(userId));
     }
 
     //

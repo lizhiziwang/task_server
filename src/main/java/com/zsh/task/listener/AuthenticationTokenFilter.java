@@ -54,6 +54,8 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //获取token
         try{
+            log.info("当前请求的url:"+request.getRequestURI());
+
             String token = request.getHeader("Authorization");
             if (StringUtils.isBlank(token)) {
                 //放行

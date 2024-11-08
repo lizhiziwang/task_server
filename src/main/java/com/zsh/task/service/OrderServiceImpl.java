@@ -19,7 +19,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
     @Override
-    public boolean addOrder(Long userId, List<Long> accIds,double sum) {
+    public Order addOrder(Long userId, List<Long> accIds,double sum) {
         Order var = new Order();
         var.setId(IdUtil.getSnowflakeNextId())
                 .setCreateTime(new Date())
@@ -29,6 +29,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .setUpdateTime(new Date())
                 .setCommodityList(JSONArray.parseArray(JSON.toJSONString(accIds)).toJSONString());
         //获取订单账号的信息
-        return baseMapper.insertSelective(var)>0;
+        baseMapper.insertSelective(var);
+        return var;
     }
 }

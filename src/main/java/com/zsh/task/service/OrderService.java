@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface OrderService extends IService<Order> {
 
-    boolean addOrder(Long userId, List<Long> accIds,double sum);
+    Order addOrder(Long userId, List<Long> accIds,double sum);
 }

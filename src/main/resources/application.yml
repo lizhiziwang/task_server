@@ -13,7 +13,7 @@ mybatis-plus:
 game:
   url:
     # ","分割，不需要进行鉴权的接口
-    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay
+    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo
   file:
     # 文件存放路径
     path: D:/task_server_game/upload/
@@ -22,6 +22,9 @@ game:
 
 
 spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   main:
     allow-circular-references: true
   datasource:
@@ -35,7 +38,7 @@ spring:
       #druid数据源专有配置
       initialSize: 10
       minIdle: 10
-      maxActive: 20
+      maxActive: 2000
       maxWait: 600000
       # 主要配置以上几个即可
       timeBetweenEvictionRunsMillis: 600000

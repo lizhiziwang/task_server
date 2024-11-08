@@ -45,6 +45,8 @@ public class User implements Serializable {
     private String idiograph;
     @TableField(value = "purse",jdbcType = JdbcType.DOUBLE)
     private Double purse;
+    @TableField(value = "location",jdbcType = JdbcType.VARCHAR)
+    private String location;
 
     @TableField(exist = false)
     private Integer mesCount;

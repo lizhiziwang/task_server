@@ -10,6 +10,7 @@ import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.alipay.easysdk.factory.Factory;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
 import com.zsh.task.config.AliPayConfig;
@@ -41,6 +42,8 @@ public class AliPayController {
     UserService us;
     @Resource
     MoneyRecordService mrs;
+    @Resource
+    UserCache uc;
 
     //order
     @Resource
@@ -117,6 +120,7 @@ public class AliPayController {
 
         // 开发无法执行回调，再辞手动
         us.purseUpOrDown(-aliPay.getTotalAmount(),aliPay.getCurrentUserId());
+        uc.updateCache(aliPay.getCurrentUserId());
     }
 
     //提现
@@ -167,6 +171,8 @@ public class AliPayController {
            if (response.isSuccess()) {
                // 设置用户钱包
                us.purseUpOrDown(Double.parseDouble(amount),LoginUserThreatContext.getUser().getId());
+               uc.updateCache(LoginUserThreatContext.getUser().getId());
+
                // 设置充值结果
                UpdateWrapper<MoneyRecord> uw = new UpdateWrapper<>();
                uw.set("update_time",new Date())
