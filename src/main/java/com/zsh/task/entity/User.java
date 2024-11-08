@@ -51,7 +51,7 @@ public class User implements Serializable {
     @TableField(exist = false)
     private Integer mesCount;
     @TableField(exist = false)
-    private String lastMess;
+    private Date lastTime;
     //多表连接用
     @TableField(exist = false)
     private Integer identity;

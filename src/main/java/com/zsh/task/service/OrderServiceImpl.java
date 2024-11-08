@@ -1,13 +1,18 @@
 package com.zsh.task.service;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zsh.task.constant.OrderState;
 import com.zsh.task.entity.Order;
 import com.zsh.task.mapper.OrderMapper;
+import com.zsh.task.vo.OrderSearchVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -31,5 +36,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //获取订单账号的信息
         baseMapper.insertSelective(var);
         return var;
+    }
+
+    @Override
+    public Page<Order> page(OrderSearchVo vo) {
+        Page<Order> page = new Page<>(vo.getCurrent() ,vo.getSize());
+
+        QueryWrapper<Order> qw = new QueryWrapper<>();
+        if (vo.getCreateUser() !=null) {
+            qw.eq("create_user",vo.getCreateUser());
+        }
+        if (StringUtils.isNoneBlank(vo.getStartTime())&&StringUtils.isNoneBlank(vo.getEndTime())) {
+            Date start = DateUtil.parse(vo.getStartTime());
+            Date end = DateUtil.parse(vo.getEndTime());
+
+            qw.between("create_time",start,end);
+        }
+        if (vo.getSumLow()!=null&&vo.getSumTop()!=null) {
+            qw.between("sum",vo.getSumLow(),vo.getSumTop());
+        }
+        if(vo.getProNum() != null){
+            qw.apply("JSON_LENGTH(commodity_list) = {0}",vo.getProNum());
+        }
+
+        if(vo.getAsc())
+            qw.orderByAsc(vo.getOrderBy());
+        qw.orderByDesc(vo.getOrderBy());
+        //分页查询
+        baseMapper.selectPage_(page,qw);
+
+        List<Order> records = page.getRecords();
+        records.forEach(e->e.setState_(OrderState.findByCode(e.getState()).name));
+        return page;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new OrderSearchVo().getCreateUser());
     }
 }

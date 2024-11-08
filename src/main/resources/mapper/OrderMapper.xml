@@ -93,4 +93,17 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
+    <select id="selectPage_" resultType="com.zsh.task.entity.Order">
+        SELECT
+            orders.*,
+            trad_account.show_img as showImg
+        FROM
+            `orders`
+                JOIN
+            trad_account ON trad_account.id = JSON_EXTRACT(orders.commodity_list, '$[0]')
+        ${ew.customSqlSegment}
+    </select>
+
+
+
 </mapper>

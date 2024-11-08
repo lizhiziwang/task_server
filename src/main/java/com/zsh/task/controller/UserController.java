@@ -155,15 +155,15 @@ public class UserController {
                                            @RequestParam(name = "name") String name){
         List<User> allFriend = fs.getAllFriend(userId, name);
         //添加未读数
-        List<UnreadVo> vos = ms.selectUnread(userId);
-        for(User user:allFriend){
-            for (UnreadVo vo:vos){
-                if (vo.getSendUser().equals(user.getId())) {
-                    user.setMesCount(vo.getCount());
-                    break;
-                }
-            }
-        }
+//        List<UnreadVo> vos = ms.selectUnread(userId);
+//        for(User user:allFriend){
+//            for (UnreadVo vo:vos){
+//                if (vo.getSendUser().equals(user.getId())) {
+//                    user.setMesCount(vo.getCount());
+//                    break;
+//                }
+//            }
+//        }
 
         return Result.succeed(allFriend);
     }

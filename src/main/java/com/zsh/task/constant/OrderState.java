@@ -29,6 +29,15 @@ public enum OrderState {
         return this.code;
     }
 
+    public static OrderState findByCode(String code){
+        for (OrderState item : values()) {
+            if (item.code.equals(code)) {
+                return item;
+            }
+        }
+        throw new IllegalArgumentException("code is Illegal");
+    }
+
     public static List<Map<String,String>> toList(){
         List<Map<String,String>> re = new ArrayList<>();
         OrderState[] values = values();

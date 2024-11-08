@@ -70,6 +70,10 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
         }
         return baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
     }
+    @Override
+    public Page<TradAccount> selectPage(Page<TradAccount> page,QueryWrapper<TradAccount> qw){
+        return baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
+    }
 
     @Override
     public double getPricesByIds(List<Long> ids) {

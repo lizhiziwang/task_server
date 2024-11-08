@@ -3,6 +3,7 @@ package com.zsh.task.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
@@ -13,6 +14,7 @@ import com.zsh.task.entity.User;
 import com.zsh.task.service.OrderService;
 import com.zsh.task.service.TradAccountService;
 import com.zsh.task.service.UserService;
+import com.zsh.task.vo.OrderSearchVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -113,4 +115,8 @@ public class OrderController {
     }
 
 
+    @PostMapping("/page")
+    public Result<Page<Order>> page(@RequestBody OrderSearchVo vo){
+        return Result.succeed(os.page(vo));
+    }
 }

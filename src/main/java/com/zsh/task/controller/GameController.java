@@ -1,6 +1,7 @@
 package com.zsh.task.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
@@ -108,6 +109,18 @@ public class GameController {
                 .setCreateTime(new Date())
                 .setUpdateTime(new Date());
         return mrs.save(mr)?Result.succeed(mr):Result.failed("充值失败！请稍后再试");
+    }
+
+    // 购物车列表
+    @GetMapping("/want/page")
+    public Result<Page<TradAccount>> wantPage(@RequestParam(name = "current") Long current,
+                                              @RequestParam(name = "size") Long size){
+
+        QueryWrapper<TradAccount> qw = new QueryWrapper<>();
+        qw.eq("t2.is_want",1)
+                        .orderByDesc("t2.create_time");
+
+        return Result.succeed(tas.selectPage(new Page<>(current,size),qw));
     }
 
 }
