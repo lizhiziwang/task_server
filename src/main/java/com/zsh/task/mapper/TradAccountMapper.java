@@ -8,6 +8,7 @@ import com.zsh.task.entity.TradAccount;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -21,4 +22,8 @@ public interface TradAccountMapper extends BaseMapper<TradAccount> {
     Page<TradAccount> selectPage(@Param("userId") Long userId, Page<?> page, @Param(Constants.WRAPPER)QueryWrapper<TradAccount> qw);
     Double getPricesByIds(@Param("ids") List<Long> ids);
     int updateExcite(@Param("items") List<TradAccount> items);
+
+    List<Map<String,Object>> typeCount(@Param("pubUser")Long pubUser,
+                                       @Param("pubTime")String pubTime);
+    Page<Map<String,Object>> selectPage_2(@Param("pubUser") Long pubUser, Page<?> page, @Param(Constants.WRAPPER)QueryWrapper<?> qw);
 }

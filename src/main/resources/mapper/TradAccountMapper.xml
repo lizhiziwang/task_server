@@ -200,4 +200,25 @@
                     </foreach>
     </update>
 
+    <select id="typeCount" resultType="java.util.Map">
+        select game_type name,count(1) value
+            from trad_account
+        <where>
+            <if test="pubUser != null">
+                and pub_user = #{pubUser}
+            </if>
+            <if test="pubTime != null">
+                and create_time between #{pubTime} and NOW()
+            </if>
+        </where>
+        group by game_type
+    </select>
+
+    <select id="selectPage_2" resultType="java.util.Map">
+        select  t1.*,t2.id orderId,t2.state state
+            from trad_account t1 left join orders t2 on(t1.id = JSON_EXTRACT(t2.commodity_list, '$[0]') and t1.pub_user = #{pubUser})
+        ${ew.customSqlSegment}
+     </select>
+
+
 </mapper>

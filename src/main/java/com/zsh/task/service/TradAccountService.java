@@ -20,4 +20,6 @@ public interface TradAccountService extends IService<TradAccount> {
     //更新是否存在状态
     void updateExcite(List<TradAccount> items);
     Page<TradAccount> selectPage(Page<TradAccount> page, QueryWrapper<TradAccount> qw);
+    List<Map<String,Object>> typeCount(Long pubUser,String pubTime);
+    Page<?> selectPage_2(Map<String,Object> param);
 }

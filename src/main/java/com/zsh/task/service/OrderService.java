@@ -6,10 +6,12 @@ import com.zsh.task.entity.Order;
 import com.zsh.task.vo.OrderSearchVo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OrderService extends IService<Order> {
 
     Order addOrder(Long userId, List<Long> accIds,double sum);
 
     Page<Order> page(OrderSearchVo vo);
+    List<Map<String,Object>> countData(Long pubUser, String pubTime);
 }

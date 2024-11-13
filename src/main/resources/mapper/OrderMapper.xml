@@ -104,6 +104,25 @@
         ${ew.customSqlSegment}
     </select>
 
+    <select id="countData" resultType="java.util.Map">
+        select
+            date( update_time ) AS "time",
+            ROUND( SUM( sum ), 2 ) AS "sum"
+        from orders
+        <where>
+            <if test="pubUser != null">
+                and create_user = #{pubUser}
+            </if>
+            <if test="selectTime">
+                and update_time between #{selectTime} and now()
+            </if>
+        </where>
+        GROUP BY
+            DATE(update_time)
+        ORDER BY
+            time
+    </select>
+
 
 
 </mapper>

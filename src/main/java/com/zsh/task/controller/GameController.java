@@ -123,4 +123,32 @@ public class GameController {
         return Result.succeed(tas.selectPage(new Page<>(current,size),qw));
     }
 
+    @PostMapping("/list/ids")
+    public Result<List<TradAccount>> getByList(@RequestBody Long [] ids){
+        QueryWrapper<TradAccount> qw = new QueryWrapper<>();
+        qw.in("t1.id",ids)
+                .orderByDesc("t2.create_time");
+
+        return Result.succeed(tas.selectPage(new Page<>(1,20),qw).getRecords());
+    }
+    @GetMapping("/type/count")
+    public Result<List<Map<String, Object>>> typeCount(@RequestParam(name = "pubUser") Long pubUser,
+                                       @RequestParam(name = "pubTime") String pubTime){
+        List<Map<String, Object>> re = tas.typeCount(pubUser, pubTime);
+
+        re.forEach(e->{
+            String name = e.get("name").toString();
+            String alia = GameType.findByCode(name).getAlia();
+            e.put("name",alia);
+        });
+        return Result.succeed(re);
+    }
+    @PostMapping("/my/get")
+    public Result<Page<?>> myTranGet(@RequestBody Map<String,Object> param) {
+        return Result.succeed(tas.selectPage_2(param));
+    }
+    @PostMapping("/de/{id}")
+    public Result<Boolean> deleteTra(@PathVariable Long id){
+        return Result.succeed(tas.removeById(id));
+    }
 }

@@ -15,8 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -66,11 +70,39 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         baseMapper.selectPage_(page,qw);
 
         List<Order> records = page.getRecords();
-        records.forEach(e->e.setState_(OrderState.findByCode(e.getState()).name));
+        records.forEach(e->{
+            e.setState_(OrderState.findByCode(e.getState()).name);
+            JSONArray array = JSONArray.parseArray(e.getCommodityList());
+            JSONArray ja = new JSONArray();
+
+            for (Object o : array) {
+                ja.add(String.valueOf(o));
+            }
+
+            e.setCommodityList(ja.toJSONString());
+        });
         return page;
     }
 
+    public List<Map<String,Object>> countData(Long pubUser,String pubTime){
+        String date;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if (StringUtils.isBlank(pubTime)) {
+            LocalDate currentDate = LocalDate.now();
+            LocalDate localDate = currentDate.minusMonths(1);
+            Date var = new Date(localDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+            date = sdf.format(var);
+        }else {
+            Date var = DateUtil.parse(pubTime);
+            date = sdf.format(var);
+        }
+        return baseMapper.countData(pubUser,date);
+    }
+
     public static void main(String[] args) {
-        System.out.println(new OrderSearchVo().getCreateUser());
+        LocalDate currentDate = LocalDate.now();
+        LocalDate localDate = currentDate.minusMonths(1);
+        Date date = new Date(localDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+        System.out.println(date);
     }
 }
