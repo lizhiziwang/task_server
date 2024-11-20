@@ -4,7 +4,7 @@ server:
 mybatis-plus:
   configuration:
     call-setters-on-nulls: true
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #logging:
 #  level:
 #    root: info
@@ -12,14 +12,16 @@ mybatis-plus:
 #    com.zsh.task.mapper.MessageMapper: info
 
 game:
+  gaoDe:
+    key: 17be85abdc35ac0635cfcfe31fe10936
   url:
     # ","分割，不需要进行鉴权的接口
     notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo
   file:
     # 文件存放路径
-    path: D:/task_server_game/upload/
+#    path: D:/task_server_game/upload/
     # linux下路径
-#    path: /tmp/task_server_game/upload/
+    path: /tmp/task_server_game/upload/
 
 
 spring:
@@ -32,8 +34,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.jdbc.Driver
-#    password: Zsh621002
-    password: 123456
+    password: Zsh621002
+#    password: 123456
     username: root
     druid:
       #SpringBoot因为默认是hikari数据源所以对于其他数据源默认是不注入这些属性的，需要手动配置
@@ -60,7 +62,7 @@ spring:
     # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
     active-timeout: -1
     # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
-    is-concurrent: true
+    is-concurrent: false
     # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
     is-share: true
     # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）

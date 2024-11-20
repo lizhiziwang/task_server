@@ -1,6 +1,10 @@
 package com.zsh.task.controller;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.common.LoginUserThreatContext;
@@ -10,9 +14,12 @@ import com.zsh.task.entity.MoneyRecord;
 import com.zsh.task.entity.TradAccount;
 import com.zsh.task.service.MoneyRecordService;
 import com.zsh.task.service.TradAccountService;
+import com.zsh.task.service.UserService;
 import com.zsh.task.service.WantAccountService;
+import com.zsh.task.utils.TimeUtils;
 import com.zsh.task.vo.AccountSelectVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +38,8 @@ import java.util.stream.Collectors;
 public class GameController {
     @Resource
     WantAccountService was;
+    @Resource
+    UserService us;
     @Resource
     TradAccountService tas;
     @Resource
@@ -150,5 +159,60 @@ public class GameController {
     @PostMapping("/de/{id}")
     public Result<Boolean> deleteTra(@PathVariable Long id){
         return Result.succeed(tas.removeById(id));
+    }
+
+    @GetMapping("/sandiantu")
+    public Result<JSONArray> allData(@RequestParam(name = "pubTime") String pubTime,
+                                     @RequestParam(name = "pubUser")Long pubUser){
+        JSONArray re = new JSONArray();
+
+        QueryWrapper<TradAccount> qw = new QueryWrapper<>();
+
+        if(pubUser != 0L){
+            qw.eq("pub_user",pubUser);
+        }
+        if (StringUtils.isNoneBlank(pubTime)) {
+            Date parse = DateUtil.parse(pubTime);
+            qw.gt("create_time",parse);
+
+        }else {
+            Date date = TimeUtils.last30dayDate();
+            qw.gt("create_time",date);
+        }
+
+        List<TradAccount> var = tas.list(qw);
+
+        for (TradAccount item : var) {
+            item.setGameType(GameType.findByCode(item.getGameType()).getAlia());
+        }
+
+        Map<String, List<TradAccount>> collect = var.stream().collect(
+                Collectors.groupingBy(TradAccount::getGameType)
+        );
+
+        collect.forEach((k,v)->{
+            List<Object[]> var2 = new ArrayList<>();
+            for (TradAccount item : v) {
+                var2.add(new Object[]{item.getWantNum(), item.getPrice(),item.getId()});
+            }
+            Map<String,Object> map = new HashMap<>();
+            map.put("name",k);
+            map.put("data",var2);
+            re.add(map);
+        });
+        return Result.succeed(re);
+    }
+    @GetMapping("/erecsxz")
+    public Result<JSONArray> coordateData(){
+        JSONArray ja = new JSONArray();
+
+        List<Map<String, Object>> data = us.selectAllCity();
+        data.forEach(e->{
+            JSONObject jo = new JSONObject();
+            jo.put("name",e.get("name"));
+            jo.put("value",new Object[]{ e.get("lon"),  e.get("lat"),Integer.parseInt(e.get("count").toString())});
+            ja.add(jo);
+        });
+        return Result.succeed(ja);
     }
 }

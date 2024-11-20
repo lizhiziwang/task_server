@@ -27,4 +27,5 @@ public interface UserService extends IService<User> {
     boolean updateByPrimaryKeySelective(User user);
 
     boolean purseUpOrDown(double var1,Long id);
+    List<Map<String,Object>> selectAllCity();
 }

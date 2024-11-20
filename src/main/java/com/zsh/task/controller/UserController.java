@@ -15,14 +15,15 @@ import com.zsh.task.entity.FriendRequest;
 import com.zsh.task.entity.User;
 import com.zsh.task.entity.UserIdentity;
 import com.zsh.task.service.*;
+import com.zsh.task.utils.HttpRequestUtils;
 import com.zsh.task.vo.UnreadVo;
 import com.zsh.task.vo.UserVo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.print.attribute.standard.MediaSize;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +46,8 @@ public class UserController {
     UserIdentityService uis;
     @Resource
     FriendRequestService frs;
+    @Value("${game.gaoDe.key}")
+    String gaodeKey;
 
     @GetMapping("/login")
     public Result<Map<String, Object>> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -106,12 +109,24 @@ public class UserController {
         user.setUpdateTime(new Date());
         if(org.apache.commons.lang3.StringUtils.isNoneBlank(user.getPwd())) {
             user.setPwd(encoder.encode(user.getPwd()));
+            //更改密码之后需要重新登录
+            StpUtil.logoutByLoginId(user.getId());
         }
-        //更改之后需要重新登录
-        StpUtil.logoutByLoginId(user.getId());
         //更新角色
         if (user.getIdentity() != null){
             uis.updateByUserId(user.getIdentity(), user.getId());
+        }
+        //地理逆编码
+        if(user.getLon()!= 0&&user.getLat()!=0){
+            String url = "https://restapi.amap.com/v3/geocode/regeo"
+                    +"?key="+gaodeKey
+                    +"&location="+user.getLon()+","+user.getLat();
+            JSONObject jo = HttpRequestUtils.get(url);
+            String cityCode = jo.getJSONObject("regeocode").getJSONObject("addressComponent").getString("citycode");
+            String cityName = jo.getJSONObject("regeocode").getJSONObject("addressComponent").getString("city");
+            user.setCityCode(cityCode)
+                    .setCityName(cityName)
+                    .setLocation(jo.getJSONObject("regeocode").getString("formatted_address"));
         }
         return Result.succeed(us.updateByPrimaryKeySelective(user));
     }
@@ -248,5 +263,16 @@ public class UserController {
         Long id = LoginUserThreatContext.getUser().getId();
         User byId = us.getById(id);
         return Result.succeed(byId);
+    }
+    //all user info
+    @GetMapping("/aui")
+    public Result<List<?>> getUserInfo(){
+
+        QueryWrapper wrapper = new QueryWrapper();
+
+        wrapper.select("name,id");
+
+        List<Map<String,Object>> list = us.listMaps(wrapper);
+        return Result.succeed(list);
     }
 }

@@ -187,4 +187,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        System.out.println(s);
 //
 //    }
+    public List<Map<String,Object>> selectAllCity(){
+        return baseMapper.selectAllCity();
+    }
 }

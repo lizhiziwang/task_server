@@ -204,7 +204,7 @@
         select game_type name,count(1) value
             from trad_account
         <where>
-            <if test="pubUser != null">
+            <if test="pubUser != 0">
                 and pub_user = #{pubUser}
             </if>
             <if test="pubTime != null">

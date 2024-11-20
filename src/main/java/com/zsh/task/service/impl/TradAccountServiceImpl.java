@@ -9,6 +9,7 @@ import com.zsh.task.constant.OrderState;
 import com.zsh.task.entity.TradAccount;
 import com.zsh.task.mapper.TradAccountMapper;
 import com.zsh.task.service.TradAccountService;
+import com.zsh.task.utils.TimeUtils;
 import com.zsh.task.vo.AccountSelectVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,10 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
         Page<Map> page = new Page<>(params.getCurrent(),params.getSize());
 
         QueryWrapper<TradAccount> qw = new QueryWrapper<>();
-        if((!"ALL".equals(params.getGameType()))&&(!"MY".equals(params.getGameType()))){
+        qw.eq("is_exist",1);
+
+        if((!"ALL".equals(params.getGameType())) && (!"MY".equals(params.getGameType()))
+                && StringUtils.isNoneBlank(params.getGameType())){
             qw.eq("game_type",params.getGameType());
         }else if("MY".equals(params.getGameType())){
             //todo 待实现
@@ -67,11 +71,21 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
         }
         if(StringUtils.isNoneBlank(params.getDesText()))
             qw.like("des_text",params.getDesText());
-        if (params.isDesc()){
-            qw.orderByDesc(params.getOrderBy());
+        boolean b = StringUtils.isNoneBlank(params.getOrderBy());
+        if(!b){
+            if (params.isDesc()){
+                qw.orderByDesc("want_num");
+            }else {
+                qw.orderByAsc("want_num");
+            }
         }else {
-            qw.orderByAsc(params.getOrderBy());
+            if (params.isDesc()){
+                qw.orderByDesc(params.getOrderBy());
+            }else {
+                qw.orderByAsc(params.getOrderBy());
+            }
         }
+
         return baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
     }
     @Override
@@ -93,10 +107,7 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
         String date;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if (StringUtils.isBlank(pubTime)) {
-            LocalDate currentDate = LocalDate.now();
-            LocalDate localDate = currentDate.minusMonths(1);
-            Date var = new Date(localDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
-            date = sdf.format(var);
+            date = TimeUtils.last30dayStr();
         }else {
             Date var = DateUtil.parse(pubTime);
             date = sdf.format(var);
