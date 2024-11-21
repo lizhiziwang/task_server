@@ -47,9 +47,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("name",name);
         User user = baseMapper.selectOne(wrapper);
+        if(user == null) {
+            return null;
+        }
 
         if(!encoder.matches(pwd, user.getPwd())){
-            throw new RuntimeException("用户名或密码错误");
+            return null;
         }
         LoginUser loginUser = new LoginUser(user);
 

@@ -4,10 +4,13 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayFundTransUniTransferModel;
+import com.alipay.api.domain.AlipayUserInfoAuthModel;
 import com.alipay.api.domain.Participant;
 import com.alipay.api.request.AlipayFundTransUniTransferRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayUserInfoAuthRequest;
 import com.alipay.api.response.AlipayFundTransUniTransferResponse;
+import com.alipay.api.response.AlipayUserInfoAuthResponse;
 import com.alipay.easysdk.factory.Factory;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zsh.task.cache.UserCache;
@@ -28,9 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -188,5 +189,41 @@ public class AliPayController {
            log.error(e.getMessage());
        }
         return Result.succeed(true);
+    }
+
+    @GetMapping("/a")
+    public void a() throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, aliPayConfig.getAppId(),
+                aliPayConfig.getAppPrivateKey(), FORMAT, CHARSET, aliPayConfig.getAlipayPublicKey(), SIGN_TYPE);
+        // 构造请求参数以调用接口
+        AlipayUserInfoAuthRequest request = new AlipayUserInfoAuthRequest();
+        AlipayUserInfoAuthModel model = new AlipayUserInfoAuthModel();
+
+        // 设置接口权限值
+        List<String> scopes = new ArrayList<String>();
+        scopes.add("auth_base");
+        model.setScopes(scopes);
+
+        model.setState("init");
+
+        request.setBizModel(model);
+        // 第三方代调用模式下请设置app_auth_token
+        // request.putOtherTextParam("app_auth_token", "<-- 请填写应用授权令牌 -->");
+
+        AlipayUserInfoAuthResponse response = alipayClient.pageExecute(request, "POST");
+        // 如果需要返回GET请求，请使用
+        // AlipayUserInfoAuthResponse response = alipayClient.pageExecute(request, "GET");
+        String pageRedirectionData = response.getBody();
+        System.out.println(pageRedirectionData);
+
+        if (response.isSuccess()) {
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+            // sdk版本是"4.38.0.ALL"及以上,可以参考下面的示例获取诊断链接
+            // String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
+            // System.out.println(diagnosisUrl);
+        }
+
     }
 }

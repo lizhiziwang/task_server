@@ -74,6 +74,9 @@ public class UserController {
 //            return Result.failed("登录失败！");
 //        }
         Map<String, Object> re = us.doLogin(userName, password);
+        if (re == null){
+            return Result.failed("账号或密码错误！");
+        }
         return Result.succeed(re);
     }
 
@@ -87,12 +90,14 @@ public class UserController {
         if (byName != null) {
             return Result.failed("用户名'"+userName+"'已存在，请重新输入！");
         }
-        User re = new User();
-        re.setIsOnline(0);
-        re.setId(IdUtil.getSnowflakeNextId());
-        re.setName(user.getName());
-        re.setPwd(encoder.encode(user.getPwd()));
-        return Result.succeed(us.save(re));
+//        User re = new User();
+        user.setIsOnline(0);
+        user.setId(IdUtil.getSnowflakeNextId());
+//        user.setName(user.getName());
+        user.setPwd(encoder.encode(user.getPwd()));
+        user.setCreateTime(new Date())
+                .setUpdateTime(new Date());
+        return Result.succeed(us.save(user));
 
     }
     // 编辑用户
