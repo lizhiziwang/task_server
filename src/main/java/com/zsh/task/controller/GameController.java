@@ -208,6 +208,8 @@ public class GameController {
 
         List<Map<String, Object>> data = us.selectAllCity();
         data.forEach(e->{
+            if(e.get("lon") == null|| e.get("lat") == null)
+                return;
             JSONObject jo = new JSONObject();
             jo.put("name",e.get("name"));
             jo.put("value",new Object[]{ e.get("lon"),  e.get("lat"),Integer.parseInt(e.get("count").toString())});
