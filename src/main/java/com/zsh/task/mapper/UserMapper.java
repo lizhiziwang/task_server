@@ -24,4 +24,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     Page<User> myPage(Page<User> page , @Param(Constants.WRAPPER)QueryWrapper<User> qw);
     int purseUpOrDown(@Param("var1")double var1,@Param("id")Long id);
+    List<Map<String,Object>> getRequestNoAgree(@Param("receiver") Long receiver);
+
+    List<Map<String,Object>> selectAllCity();
 }

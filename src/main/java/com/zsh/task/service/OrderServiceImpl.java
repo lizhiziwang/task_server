@@ -1,17 +1,26 @@
 package com.zsh.task.service;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zsh.task.constant.OrderState;
 import com.zsh.task.entity.Order;
 import com.zsh.task.mapper.OrderMapper;
+import com.zsh.task.vo.OrderSearchVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -19,7 +28,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
     @Override
-    public boolean addOrder(Long userId, List<Long> accIds,double sum) {
+    public Order addOrder(Long userId, List<Long> accIds,double sum) {
         Order var = new Order();
         var.setId(IdUtil.getSnowflakeNextId())
                 .setCreateTime(new Date())
@@ -29,6 +38,71 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .setUpdateTime(new Date())
                 .setCommodityList(JSONArray.parseArray(JSON.toJSONString(accIds)).toJSONString());
         //获取订单账号的信息
-        return baseMapper.insertSelective(var)>0;
+        baseMapper.insertSelective(var);
+        return var;
+    }
+
+    @Override
+    public Page<Order> page(OrderSearchVo vo) {
+        Page<Order> page = new Page<>(vo.getCurrent() ,vo.getSize());
+
+        QueryWrapper<Order> qw = new QueryWrapper<>();
+        if (vo.getCreateUser() !=null) {
+            qw.eq("create_user",vo.getCreateUser());
+        }
+        if (StringUtils.isNoneBlank(vo.getStartTime())&&StringUtils.isNoneBlank(vo.getEndTime())) {
+            Date start = DateUtil.parse(vo.getStartTime());
+            Date end = DateUtil.parse(vo.getEndTime());
+
+            qw.between("create_time",start,end);
+        }
+        if (vo.getSumLow()!=null&&vo.getSumTop()!=null) {
+            qw.between("sum",vo.getSumLow(),vo.getSumTop());
+        }
+        if(vo.getProNum() != null){
+            qw.apply("JSON_LENGTH(commodity_list) = {0}",vo.getProNum());
+        }
+
+        if(vo.getAsc())
+            qw.orderByAsc(vo.getOrderBy());
+        qw.orderByDesc(vo.getOrderBy());
+        //分页查询
+        baseMapper.selectPage_(page,qw);
+
+        List<Order> records = page.getRecords();
+        records.forEach(e->{
+            e.setState_(OrderState.findByCode(e.getState()).name);
+            JSONArray array = JSONArray.parseArray(e.getCommodityList());
+            JSONArray ja = new JSONArray();
+
+            for (Object o : array) {
+                ja.add(String.valueOf(o));
+            }
+
+            e.setCommodityList(ja.toJSONString());
+        });
+        return page;
+    }
+
+    public List<Map<String,Object>> countData(Long pubUser,String pubTime){
+        String date;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if (StringUtils.isBlank(pubTime)) {
+            LocalDate currentDate = LocalDate.now();
+            LocalDate localDate = currentDate.minusMonths(1);
+            Date var = new Date(localDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+            date = sdf.format(var);
+        }else {
+            Date var = DateUtil.parse(pubTime);
+            date = sdf.format(var);
+        }
+        return baseMapper.countData(pubUser,date);
+    }
+
+    public static void main(String[] args) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate localDate = currentDate.minusMonths(1);
+        Date date = new Date(localDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+        System.out.println(date);
     }
 }

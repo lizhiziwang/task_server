@@ -93,4 +93,36 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
+    <select id="selectPage_" resultType="com.zsh.task.entity.Order">
+        SELECT
+            orders.*,
+            trad_account.show_img as showImg
+        FROM
+            `orders`
+                JOIN
+            trad_account ON trad_account.id = JSON_EXTRACT(orders.commodity_list, '$[0]')
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="countData" resultType="java.util.Map">
+        select
+            date( update_time ) AS "time",
+            ROUND( SUM( sum ), 2 ) AS "sum"
+        from orders
+        <where>
+            <if test="pubUser != null">
+                and create_user = #{pubUser}
+            </if>
+            <if test="selectTime">
+                and update_time between #{selectTime} and now()
+            </if>
+        </where>
+        GROUP BY
+            DATE(update_time)
+        ORDER BY
+            time
+    </select>
+
+
+
 </mapper>

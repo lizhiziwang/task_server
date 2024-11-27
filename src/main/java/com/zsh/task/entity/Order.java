@@ -33,5 +33,9 @@ public class Order implements Serializable {
 
     @TableField(exist = false)
     private List<TradAccount> accounts;
+    @TableField(exist = false)
+    private String state_;
+    @TableField(exist = false)
+    private String showImg;
 
 }

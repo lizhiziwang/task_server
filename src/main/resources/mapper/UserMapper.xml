@@ -15,10 +15,15 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <result column="idiograph" jdbcType="VARCHAR" property="idiograph" />
         <result column="purse" jdbcType="DOUBLE" property="purse" />
+        <result column="location" jdbcType="VARCHAR" property="location" />
+        <result column="lon" jdbcType="DOUBLE" property="lon" />
+        <result column="lat" jdbcType="DOUBLE" property="lat" />
+        <result column="city_name" jdbcType="VARCHAR" property="cityName" />
+        <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
     </resultMap>
 
     <sql id="base_column">
-        id,name,pwd,alia,avatar,is_online,create_time,phone,gender,birthday,update_time,idiograph, purse
+        id,name,pwd,alia,avatar,is_online,create_time,phone,gender,birthday,update_time,idiograph, purse,location,lon,lat,city_name,city_code
     </sql>
 
     <update id="updateByPrimaryKeySelective">
@@ -60,6 +65,21 @@
             <if test="purse !=null">
                 purse = #{purse,jdbcType=DOUBLE},
             </if>
+            <if test="location !=null">
+                location = #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="lon !=null">
+                lon = #{lon,jdbcType=VARCHAR},
+            </if>
+            <if test="lat !=null">
+                lat = #{lat,jdbcType=VARCHAR},
+            </if>
+            <if test="cityName !=null">
+                city_name = #{cityName,jdbcType=VARCHAR},
+            </if>
+            <if test="cityCode !=null">
+                city_code = #{cityCode,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -76,16 +96,20 @@
 
     <select id="findFriends" resultType="com.zsh.task.entity.User" parameterType="java.lang.Long">
         SELECT
-            t1.id,t1.name,t1.alia,t1.avatar,t1.is_online,t1.create_time,t1.phone,t1.gender,t1.birthday,t1.update_time
+            t1.id,t1.name,t1.alia,t1.avatar,t1.is_online,t1.create_time,t1.phone,t1.gender,t1.birthday,t1.update_time,t1.location
+            ,max(t3.send_time) lastTime,COUNT(t3.is_read) mesCount
         FROM
             user t1
-            INNER JOIN user_relation t2 ON ( t1.ID = t2.user1 OR t1.ID = t2.user2 )
+            left JOIN user_relation t2 ON ( t1.ID = t2.user1 OR t1.ID = t2.user2 )
+            left JOIN message t3 on(t1.id = t3.user1_id and t3.is_read = 0 and t3.user2_id = #{userId})
         WHERE
             t1.id != #{userId,jdbcType=BIGINT} and
             (t2.user1 = #{userId,jdbcType=BIGINT} or t2.user2 = #{userId,jdbcType=BIGINT})
             <if test="name != null">
                 and t1.name like '%${name}%'
             </if>
+        group by t1.id,t3.user1_id
+        ORDER BY max(t3.send_time) desc
     </select>
     <select id="getTwoUserToMap" resultType="com.zsh.task.entity.User">
         select <include refid="base_column"/>
@@ -101,4 +125,26 @@
 
         update user set purse = purse - #{var1},update_time = now() where id = #{id}
     </update>
+
+    <select id="getRequestNoAgree" resultType="java.util.Map">
+        select t1.* ,t2.create_time as "applicant_time" ,t2.reason  from user t1 left join friend_request t2 on(t1.id = t2.applicant)
+            where t2.receiver = #{receiver} and t2.is_agree = -1 order by t2.create_time desc
+    </select>
+
+    <select id="selectAllCity" resultType="java.util.Map">
+        SELECT
+            t1.name name,
+            COUNT( t2.pub_user ) count,
+            t1.lon lon,
+            t1.lat lat,
+            t1.city_name cityName
+        FROM
+            user t1
+            left JOIN trad_account t2 ON ( t1.id = t2.pub_user )
+        GROUP BY
+            t1.id,
+            t2.pub_user
+        ORDER BY
+            t1.id DESC
+    </select>
 </mapper>

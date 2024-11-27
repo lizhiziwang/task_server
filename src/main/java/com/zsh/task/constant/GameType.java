@@ -35,11 +35,23 @@ public enum GameType {
     public String getCode(){
         return this.code;
     }
+    public String getAlia(){
+        return this.alia;
+    }
 
     public static GameType findByName(String name){
         GameType[] values = values();
         for (GameType item : values) {
             if (item.alia.equals(name)){
+                return item;
+            }
+        }
+        throw new IllegalArgumentException("name is illegal");
+    }
+    public static GameType findByCode(String code){
+        GameType[] values = values();
+        for (GameType item : values) {
+            if (item.code.equals(code)){
                 return item;
             }
         }

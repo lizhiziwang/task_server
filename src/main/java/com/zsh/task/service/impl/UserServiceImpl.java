@@ -11,12 +11,13 @@ import com.zsh.task.entity.LoginUser;
 import com.zsh.task.entity.User;
 import com.zsh.task.mapper.UserMapper;
 import com.zsh.task.service.UserService;
-import com.zsh.task.utils.JwtUtil;
 import com.zsh.task.vo.UserVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,18 +28,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private AuthenticationManager authenticationManager;
+    @Resource
+    PasswordEncoder encoder;
 
     @Resource
     UserCache uc;
     @Override
     public Map<String,Object> doLogin(String name, String pwd) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(name,pwd);
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-        if(Objects.isNull(authenticate)){
-            throw new RuntimeException("用户名或密码错误");
-        }
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(name,pwd);
+//
+//        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+//        if(Objects.isNull(authenticate)){
+//            throw new RuntimeException("用户名或密码错误");
+//        }
         //使用userid生成token
-        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+//        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        //根据用户名查询用户信息
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("name",name);
+        User user = baseMapper.selectOne(wrapper);
+        if(user == null) {
+            return null;
+        }
+
+        if(!encoder.matches(pwd, user.getPwd())){
+            return null;
+        }
+        LoginUser loginUser = new LoginUser(user);
+
         String userId = loginUser.getUser().getId().toString();
         StpUtil.setLoginId(loginUser.getUser().getId());
 //        System.out.println("satoken是否正常"+StpUtil.checkLogin());
@@ -46,8 +63,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         uc.put(userId,loginUser);
         Map<String ,Object> re = new HashMap<>();
+//        User user = loginUser.getUser();
+        user.setIsOnline(1);
+        updateByPrimaryKeySelective(user);
 
-        re.put("user",loginUser.getUser());
+        re.put("user",user);
         re.put("token",token);
         return re;
     }
@@ -160,5 +180,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public boolean purseUpOrDown(double var1, Long id) {
         return baseMapper.purseUpOrDown(var1,id)>0;
+    }
+
+//    public static void main(String[] args) {
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        String encode = encoder.encode("123456");
+//        System.out.println(encode);
+//        boolean s = encoder.matches("123456", "$2a$10$WbOgTeQSQekcp.FcQ0fbnutuq5AOT0G/QG6B3tfatQulZ3wNm2zQO");
+//        System.out.println(s);
+//
+//    }
+    public List<Map<String,Object>> selectAllCity(){
+        return baseMapper.selectAllCity();
     }
 }

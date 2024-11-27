@@ -1,11 +1,17 @@
 package com.zsh.task.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zsh.task.entity.Order;
+import com.zsh.task.vo.OrderSearchVo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OrderService extends IService<Order> {
 
-    boolean addOrder(Long userId, List<Long> accIds,double sum);
+    Order addOrder(Long userId, List<Long> accIds,double sum);
+
+    Page<Order> page(OrderSearchVo vo);
+    List<Map<String,Object>> countData(Long pubUser, String pubTime);
 }

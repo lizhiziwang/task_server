@@ -1,6 +1,8 @@
 package com.zsh.task.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
 import com.zsh.task.entity.Message;
 import com.zsh.task.entity.User;
@@ -34,7 +36,6 @@ public class MessageController {
 
         messages.forEach(e->{
             boolean flag = id1.equals(e.getUser1Id());
-            if (!flag) System.out.println(false);
             re.add(new MessageVo(
                     e.getId(),
                     flag?id1:id2,
@@ -43,5 +44,19 @@ public class MessageController {
             );
         });
         return Result.succeed(re);
+    }
+    /**
+     * @param id1 发送人
+     * @param id2 接收人
+     * */
+    @GetMapping("/read/{id1}")
+    public Result<Boolean> toReaded(@PathVariable Long id1){
+        Long id = LoginUserThreatContext.getUser().getId();
+        UpdateWrapper<Message> uw = new UpdateWrapper<>();
+
+        uw.set("is_read",1)
+                .eq("user1_id",id1)
+                .eq("user2_id",id);
+        return Result.succeed(ms.update(uw));
     }
 }

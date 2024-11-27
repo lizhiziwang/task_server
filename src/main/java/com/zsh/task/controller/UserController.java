@@ -15,8 +15,10 @@ import com.zsh.task.entity.FriendRequest;
 import com.zsh.task.entity.User;
 import com.zsh.task.entity.UserIdentity;
 import com.zsh.task.service.*;
+import com.zsh.task.utils.HttpRequestUtils;
 import com.zsh.task.vo.UnreadVo;
 import com.zsh.task.vo.UserVo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +46,8 @@ public class UserController {
     UserIdentityService uis;
     @Resource
     FriendRequestService frs;
+    @Value("${game.gaoDe.key}")
+    String gaodeKey;
 
     @GetMapping("/login")
     public Result<Map<String, Object>> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -70,6 +74,9 @@ public class UserController {
 //            return Result.failed("登录失败！");
 //        }
         Map<String, Object> re = us.doLogin(userName, password);
+        if (re == null){
+            return Result.failed("账号或密码错误！");
+        }
         return Result.succeed(re);
     }
 
@@ -83,12 +90,14 @@ public class UserController {
         if (byName != null) {
             return Result.failed("用户名'"+userName+"'已存在，请重新输入！");
         }
-        User re = new User();
-        re.setIsOnline(0);
-        re.setId(IdUtil.getSnowflakeNextId());
-        re.setName(user.getName());
-        re.setPwd(encoder.encode(user.getPwd()));
-        return Result.succeed(us.save(re));
+//        User re = new User();
+        user.setIsOnline(0);
+        user.setId(IdUtil.getSnowflakeNextId());
+//        user.setName(user.getName());
+        user.setPwd(encoder.encode(user.getPwd()));
+        user.setCreateTime(new Date())
+                .setUpdateTime(new Date());
+        return Result.succeed(us.save(user));
 
     }
     // 编辑用户
@@ -102,13 +111,38 @@ public class UserController {
         if (us.getOne(qw)!=null) {
             return Result.failed("该用户名已存在！");
         }
-        user.setUpdateTime(new Date())
-                .setPwd(encoder.encode(user.getPwd()));
-        //更改之后需要重新登录
-        StpUtil.logoutByLoginId(user.getId());
+        user.setUpdateTime(new Date());
+        if(org.apache.commons.lang3.StringUtils.isNoneBlank(user.getPwd())) {
+            user.setPwd(encoder.encode(user.getPwd()));
+            //更改密码之后需要重新登录
+            StpUtil.logoutByLoginId(user.getId());
+        }
         //更新角色
-        uis.updateByUserId(user.getIdentity(), user.getId());
-        return Result.succeed(us.updateById(user));
+        if (user.getIdentity() != null){
+            uis.updateByUserId(user.getIdentity(), user.getId());
+        }
+        //地理逆编码
+        if(user.getLon()!= 0&&user.getLat()!=0){
+            String url = "https://restapi.amap.com/v3/geocode/regeo"
+                    +"?key="+gaodeKey
+                    +"&location="+user.getLon()+","+user.getLat();
+            JSONObject jo = HttpRequestUtils.get(url);
+            String cityCode = jo.getJSONObject("regeocode").getJSONObject("addressComponent").getString("citycode");
+            String cityName = jo.getJSONObject("regeocode").getJSONObject("addressComponent").getString("city");
+            user.setCityCode(cityCode)
+                    .setCityName(cityName)
+                    .setLocation(jo.getJSONObject("regeocode").getString("formatted_address"));
+        }
+        return Result.succeed(us.updateByPrimaryKeySelective(user));
+    }
+    //更新收货信息
+    @PostMapping("/update2")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Boolean> updateUser2(@RequestBody User user){
+
+        user.setUpdateTime(new Date());
+
+        return Result.succeed(us.updateByPrimaryKeySelective(user));
     }
     // 删除用户
     @PostMapping("/rem/{id}")
@@ -141,15 +175,15 @@ public class UserController {
                                            @RequestParam(name = "name") String name){
         List<User> allFriend = fs.getAllFriend(userId, name);
         //添加未读数
-        List<UnreadVo> vos = ms.selectUnread(userId);
-        for(User user:allFriend){
-            for (UnreadVo vo:vos){
-                if (vo.getSendUser().equals(user.getId())) {
-                    user.setMesCount(vo.getCount());
-                    break;
-                }
-            }
-        }
+//        List<UnreadVo> vos = ms.selectUnread(userId);
+//        for(User user:allFriend){
+//            for (UnreadVo vo:vos){
+//                if (vo.getSendUser().equals(user.getId())) {
+//                    user.setMesCount(vo.getCount());
+//                    break;
+//                }
+//            }
+//        }
 
         return Result.succeed(allFriend);
     }
@@ -169,7 +203,8 @@ public class UserController {
     // 添加申请
     @PostMapping("/fri/{applicant}")
     public Result<Boolean> addRequest(@PathVariable Long applicant,
-                                      @RequestParam Long receiver){
+                                      @RequestParam Long receiver,
+                                      @RequestParam(name = "mes") String mes){
         QueryWrapper<FriendRequest> qw = new QueryWrapper<>();
         qw.eq("applicant",applicant)
                 .eq("receiver",receiver);
@@ -178,16 +213,25 @@ public class UserController {
             return Result.succeed(false,"已申请，请等待对方同意！");
         }
 
-        return Result.succeed(frs.addRequest(applicant,receiver));
+        return Result.succeed(frs.addRequest(applicant,receiver,mes));
     }
 
     //同意申请,发生异常回滚
-    @PostMapping("/fri/agree/{applicant}")
+    @PostMapping("/fri/req/{applicant}/{dif}")
     @Transactional(rollbackFor = Exception.class)
-    public Result<Boolean> agreeRequest(@PathVariable Long applicant){
+    public Result<Boolean> agreeRequest(@PathVariable Long applicant, @PathVariable Integer dif){
         Long currentUserId = LoginUserThreatContext.getUser().getId();
 
         UpdateWrapper<FriendRequest> uw = new UpdateWrapper<>();
+        //拒绝
+        if(dif == 0){
+            uw.set("is_agree",0).
+                    set("update_time",new Date());
+            uw.eq("applicant",applicant)
+                    .eq("receiver",currentUserId);
+            return Result.succeed(frs.update(uw));
+        }
+        //同意
         uw.set("is_agree",1).
                 set("update_time",new Date());
         uw.eq("applicant",applicant)
@@ -207,6 +251,12 @@ public class UserController {
         return Result.succeed(true);
     }
 
+    @GetMapping("/get/fre")
+    public Result<?> getFriendRe(){
+        Long userId = LoginUserThreatContext.getUser().getId();
+        return Result.succeed(frs.getNoAgreeRequest(userId));
+    }
+
     //
     @GetMapping("/ava/{id}")
     public Result<User> getava(@PathVariable Long id){
@@ -218,5 +268,16 @@ public class UserController {
         Long id = LoginUserThreatContext.getUser().getId();
         User byId = us.getById(id);
         return Result.succeed(byId);
+    }
+    //all user info
+    @GetMapping("/aui")
+    public Result<List<?>> getUserInfo(){
+
+        QueryWrapper wrapper = new QueryWrapper();
+
+        wrapper.select("name,id");
+
+        List<Map<String,Object>> list = us.listMaps(wrapper);
+        return Result.succeed(list);
     }
 }

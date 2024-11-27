@@ -45,11 +45,21 @@ public class User implements Serializable {
     private String idiograph;
     @TableField(value = "purse",jdbcType = JdbcType.DOUBLE)
     private Double purse;
+    @TableField(value = "location",jdbcType = JdbcType.VARCHAR)
+    private String location;
+    @TableField(value = "lon",jdbcType = JdbcType.DOUBLE)
+    private Double lon;
+    @TableField(value = "lat",jdbcType = JdbcType.DOUBLE)
+    private Double lat;
+    @TableField(value = "city_code",jdbcType = JdbcType.VARCHAR)
+    private String cityCode;
+    @TableField(value = "city_name",jdbcType = JdbcType.VARCHAR)
+    private String cityName;
 
     @TableField(exist = false)
     private Integer mesCount;
     @TableField(exist = false)
-    private String lastMess;
+    private Date lastTime;
     //多表连接用
     @TableField(exist = false)
     private Integer identity;

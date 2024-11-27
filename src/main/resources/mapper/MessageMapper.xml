@@ -22,8 +22,8 @@
 
     <select id="getMessage" resultType="com.zsh.task.entity.Message">
         select * from message where
-            (user1_id = #{id1} and user2_id = #{id2}) or (user1_id = #{id2} and user2_id = #{id1})
-            and send_time >= current_date order By send_time Asc
+            ((user1_id = #{id1} and user2_id = #{id2}) or (user1_id = #{id2} and user2_id = #{id1}))
+            and send_time >= current_date - 7 order By send_time Asc
     </select>
 
 </mapper>
