@@ -11,17 +11,23 @@ mybatis-plus:
 #    com.zsh.task.mapper.UserMapper: info
 #    com.zsh.task.mapper.MessageMapper: info
 
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+
 game:
   gaoDe:
     key: 17be85abdc35ac0635cfcfe31fe10936
   url:
     # ","分割，不需要进行鉴权的接口
-    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo
+    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo,/actuator,/sendEmail,/email
   file:
     # 文件存放路径
-    path: D:/task_server_game/upload/
+#    path: D:/task_server_game/upload/
     # linux下路径
-#    path: /tmp/task_server_game/upload/
+    path: /tmp/task_server_game/upload/
 
 
 spring:
@@ -34,8 +40,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.jdbc.Driver
-#    password: Zsh621002
-    password: 123456
+    password: Zsh621002
+#    password: 123456
     username: root
     druid:
       #SpringBoot因为默认是hikari数据源所以对于其他数据源默认是不注入这些属性的，需要手动配置
@@ -69,6 +75,22 @@ spring:
     token-style: uuid
     # 是否输出操作日志
     is-log: false
+  # 163邮箱
+  mail:
+    host: smtp.163.com
+    port: 994
+    username: zhengsh1818@163.com
+    password: LZbF33AxgFug6amU
+    default-encoding: UTF-8
+    protocol: smtps
+
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          enable: true
+
 
 jwt:
   secret: asffeegrthtkygfdfwaerfdbgtyugfrtdgbvythfgrytfhnbrtdjhrfdshusgviwe0fu94509t8arfthtyijkujhmdhftykgyu

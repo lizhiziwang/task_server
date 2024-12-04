@@ -55,6 +55,8 @@ public class User implements Serializable {
     private String cityCode;
     @TableField(value = "city_name",jdbcType = JdbcType.VARCHAR)
     private String cityName;
+    @TableField(value = "email",jdbcType = JdbcType.VARCHAR)
+    private String email;
 
     @TableField(exist = false)
     private Integer mesCount;

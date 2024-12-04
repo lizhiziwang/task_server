@@ -20,10 +20,11 @@
         <result column="lat" jdbcType="DOUBLE" property="lat" />
         <result column="city_name" jdbcType="VARCHAR" property="cityName" />
         <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
     </resultMap>
 
     <sql id="base_column">
-        id,name,pwd,alia,avatar,is_online,create_time,phone,gender,birthday,update_time,idiograph, purse,location,lon,lat,city_name,city_code
+        id,name,pwd,alia,avatar,is_online,create_time,phone,gender,birthday,update_time,idiograph, purse,location,lon,lat,city_name,city_code,email
     </sql>
 
     <update id="updateByPrimaryKeySelective">
@@ -80,6 +81,9 @@
             <if test="cityCode !=null">
                 city_code = #{cityCode,jdbcType=VARCHAR},
             </if>
+            <if test="email !=null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -96,7 +100,7 @@
 
     <select id="findFriends" resultType="com.zsh.task.entity.User" parameterType="java.lang.Long">
         SELECT
-            t1.id,t1.name,t1.alia,t1.avatar,t1.is_online,t1.create_time,t1.phone,t1.gender,t1.birthday,t1.update_time,t1.location
+            t1.id,t1.name,t1.alia,t1.avatar,t1.is_online,t1.create_time,t1.phone,t1.gender,t1.birthday,t1.update_time,t1.location,t1.email
             ,max(t3.send_time) lastTime,COUNT(t3.is_read) mesCount
         FROM
             user t1

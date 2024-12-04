@@ -7,13 +7,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zsh.task.cache.EmailCodeCache;
 import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
-import com.zsh.task.entity.Friend;
-import com.zsh.task.entity.FriendRequest;
-import com.zsh.task.entity.User;
-import com.zsh.task.entity.UserIdentity;
+import com.zsh.task.entity.*;
+import com.zsh.task.handler.EMailClient;
 import com.zsh.task.service.*;
 import com.zsh.task.utils.HttpRequestUtils;
 import com.zsh.task.vo.UnreadVo;
@@ -25,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
+import java.security.SecureRandom;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,64 @@ public class UserController {
     FriendRequestService frs;
     @Value("${game.gaoDe.key}")
     String gaodeKey;
+
+//    final String template = "亲爱的先生/女士：\n  您好！\n 您的登录验证码是：__CODE__，请在5分钟内进行验证。如果验证码不为您本人申请，请忽略本邮件。";
+    final String template = "<!DOCTYPE html>\n" +
+        "<html lang=\"en\">\n" +
+        "\n" +
+        "<head>\n" +
+        "  <meta charset=\"UTF-8\">\n" +
+        "  <title>邮件内容</title>\n" +
+        "  <style>\n" +
+        "    body {\n" +
+        "      font-family: Arial, sans-serif;\n" +
+        "      background-color: #f8f8f8;\n" +
+        "      margin: 0;\n" +
+        "      padding: 0;\n" +
+        "    }\n" +
+        "\n" +
+        "  .email-wrapper {\n" +
+        "      width: 100%;\n" +
+        "      margin: 0 auto;\n" +
+        "      background-color: #fff;\n" +
+        "      border-radius: 5px;\n" +
+        "      padding: 20px;\n" +
+        "    }\n" +
+        "    p {\n" +
+        "      color: #666;\n" +
+        "      line-height: 1.5;\n" +
+        "      text-align: justify;\n" +
+        "    }\n" +
+        "\n" +
+        "    a {\n" +
+        "      color: #007bff;\n" +
+        "      text-decoration: none;\n" +
+        "    }\n" +
+        "\n" +
+        "  .footer {\n" +
+        "      margin-top: 20px;\n" +
+        "      text-align: center;\n" +
+        "      color: #999;\n" +
+        "      font-size: 14px;\n" +
+        "    }\n" +
+        "  </style>\n" +
+        "</head>\n" +
+        "\n" +
+        "<body>\n" +
+        "  <div class=\"email-wrapper\">\n" +
+        "    <p>亲爱的用户：</p>\n" +
+        "    <p style=\"text-indent: 2em;\">您好！</p>\n" +
+        "    <p style=\"text-indent: 2em;\">您的登录验证码是：__CODE__，请在5分钟内进行验证。如果验证码不为您本人申请，请忽略本邮件。</p>\n" +
+        "  </div>\n" +
+        "</body>\n" +
+        "\n" +
+        "</html>";
+
+    @Resource
+    EMailClient email;
+
+    @Resource
+    EmailCodeCache ecc;
 
     @GetMapping("/login")
     public Result<Map<String, Object>> doLogin(@RequestParam(name = "userName")@NotBlank String userName,
@@ -279,5 +338,51 @@ public class UserController {
 
         List<Map<String,Object>> list = us.listMaps(wrapper);
         return Result.succeed(list);
+    }
+    @GetMapping("/sendEmail")
+    public Result<String> sendMail(@RequestParam(name = "target") String target){
+        SecureRandom secureRandom = new SecureRandom();
+        //生成6位验证码
+        int randomSixDigits = secureRandom.nextInt(900000) + 100000;
+        String var = template.replaceAll("__CODE__", String.valueOf(randomSixDigits));
+        ecc.putCode(target, String.valueOf(randomSixDigits), (long) (60*5*1000));
+
+        email.sendMail(target,"JY店铺邮箱验证码",var);
+
+        return Result.succeed("已发送！");
+    }
+
+    // email code login
+    @GetMapping("/email")
+    public Result<Map<String, Object>> mailLogin(@RequestParam(name = "email",required = true) String email,
+                                  @RequestParam(name = "code",required = true) String code){
+
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.eq("email",email);
+
+        User one = us.getOne(qw);
+
+        if(one == null){
+            return Result.failed("用户邮箱不存在！");
+        }
+
+        String s = ecc.getCode(email);
+
+        if(org.apache.commons.lang3.StringUtils.isNoneBlank(code) && code.equals(s)){
+            StpUtil.setLoginId(one.getId());
+            Map<String,Object> m = new HashMap<>();
+            m.put("token",StpUtil.getTokenValue());
+            m.put("user",one);
+            ecc.delCache(email);
+            uc.put(String.valueOf(one.getId()),new LoginUser(one));
+
+            one.setIsOnline(1);
+            us.updateByPrimaryKeySelective(one);
+            return Result.succeed(m);
+        }else {
+            //验证码错误，移除缓存，重新发送验证码
+            ecc.delCache(email);
+            return Result.failed("验证码错误！");
+        }
     }
 }
