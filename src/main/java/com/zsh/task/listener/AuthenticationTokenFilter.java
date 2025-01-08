@@ -58,8 +58,6 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
             String token = request.getHeader("Authorization");
             if (StringUtils.isBlank(token)) {
-                //放行
-//            filterChain.doFilter(request, response);
                 JSONObject re = new JSONObject();
                 re.put("code",403);
                 re.put("data","请携带token访问！请求的接口："+request.getRequestURI());

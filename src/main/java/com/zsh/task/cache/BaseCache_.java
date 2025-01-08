@@ -7,6 +7,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 
+
+/**
+ *  对象缓存可直接使用该缓存，若是其它比如array,String登可以另外继承该类添加方法即可
+ * */
 public class BaseCache_<T>{
     //默认1分钟
     static final TimedCache<String, String> timedCache = CacheUtil.newTimedCache(1000*60*60*60 );

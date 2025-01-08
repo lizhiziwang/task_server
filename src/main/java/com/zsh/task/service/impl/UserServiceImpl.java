@@ -115,6 +115,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Boolean downLine(Long userId) {
         User user = this.getById(userId);
+        StpUtil.logoutByLoginId(userId);
         return user != null && this.updateById(user);
     }
 
@@ -148,7 +149,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<User> records = userPage.getRecords();
         records.forEach(e->{
             e.setSex(e.getGender()==0?"女":"男")
-                    .setStatus(e.getIsOnline()==0?"离线":"在线")
+
                     .setPwd("");
             if (e.getIdentity()!=null) {
                 e.setRuler(IdentityType.getByLev(e.getIdentity()).getName_());

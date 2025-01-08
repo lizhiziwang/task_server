@@ -1,5 +1,7 @@
 package com.zsh.task.controller;
 
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.session.TokenSign;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -11,25 +13,26 @@ import com.zsh.task.cache.EmailCodeCache;
 import com.zsh.task.cache.UserCache;
 import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
+import com.zsh.task.config.ThreadPoolConfig;
 import com.zsh.task.entity.*;
 import com.zsh.task.handler.EMailClient;
 import com.zsh.task.service.*;
 import com.zsh.task.utils.HttpRequestUtils;
 import com.zsh.task.vo.UnreadVo;
 import com.zsh.task.vo.UserVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import java.security.SecureRandom;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -47,6 +50,8 @@ public class UserController {
     UserIdentityService uis;
     @Resource
     FriendRequestService frs;
+    @Resource
+    ThreadPoolConfig tpc;
     @Value("${game.gaoDe.key}")
     String gaodeKey;
 
@@ -181,7 +186,7 @@ public class UserController {
             uis.updateByUserId(user.getIdentity(), user.getId());
         }
         //地理逆编码
-        if(user.getLon()!= 0&&user.getLat()!=0){
+        if(user.getLon()!= null&&user.getLat()!=null){
             String url = "https://restapi.amap.com/v3/geocode/regeo"
                     +"?key="+gaodeKey
                     +"&location="+user.getLon()+","+user.getLat();
@@ -220,6 +225,11 @@ public class UserController {
                                           @RequestParam(name = "current") Long current){
 
         Page<User> userPage = us.searchUsers(vo, size, current);
+        userPage.getRecords().forEach(e->{
+            List<TokenSign> var = StpUtil.getSessionByLoginId(e.getId()).getTokenSignList();
+            e.setIsOnline(var.size()>0?1:0)
+                    .setStatus(e.getIsOnline()==0?"离线":"在线");
+        });
         return Result.succeed(userPage);
     }
 
@@ -374,6 +384,7 @@ public class UserController {
             m.put("token",StpUtil.getTokenValue());
             m.put("user",one);
             ecc.delCache(email);
+            //缓存用户登录信息
             uc.put(String.valueOf(one.getId()),new LoginUser(one));
 
             one.setIsOnline(1);
@@ -384,5 +395,34 @@ public class UserController {
             ecc.delCache(email);
             return Result.failed("验证码错误！");
         }
+    }
+
+    @PostConstruct
+    public void userState(){
+        Runnable task = ()->{
+            while (true){
+                List<User> users = us.list();
+                List<User> update = new ArrayList<>();
+                users.forEach(e->{
+                    String var = StpUtil.getTokenValueByLoginId(e.getId());
+                    int var2 = org.apache.commons.lang3.StringUtils.isNoneBlank(var)?1:0;
+                    if(e.getIsOnline() != var2){
+                        e.setIsOnline(var2).setUpdateTime(new Date());
+                        update.add(e);
+                    }
+                });
+                if(update.size()>0){
+                    log.info("监测用户状态更新");
+                    us.updateBatchById(users);
+                }
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        };
+
+        tpc.poolExecutor().execute(task);
     }
 }

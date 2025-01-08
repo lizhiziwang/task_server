@@ -4,7 +4,7 @@ server:
 mybatis-plus:
   configuration:
     call-setters-on-nulls: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
 #logging:
 #  level:
 #    root: info
@@ -22,12 +22,12 @@ game:
     key: 17be85abdc35ac0635cfcfe31fe10936
   url:
     # ","分割，不需要进行鉴权的接口
-    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo,/actuator,/sendEmail,/email
+    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo,/actuator,/sendEmail,/email,/loginTest
   file:
     # 文件存放路径
-#    path: D:/task_server_game/upload/
+    path: D:/task_server_game/upload/
     # linux下路径
-    path: /tmp/task_server_game/upload/
+#    path: /my/task_server/
 
 
 spring:
@@ -40,8 +40,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.jdbc.Driver
-    password: Zsh621002
-#    password: 123456
+#    password: Zsh621002
+    password: 123456
     username: root
     druid:
       #SpringBoot因为默认是hikari数据源所以对于其他数据源默认是不注入这些属性的，需要手动配置
@@ -64,7 +64,7 @@ spring:
     # token 名称（同时也是 cookie 名称）
     token-name: satoken
     # token 有效期（单位：秒） 默认30天，-1 代表永久有效
-    timeout: 2592000
+    timeout: 86400
     # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
     active-timeout: -1
     # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
@@ -86,7 +86,7 @@ spring:
 
     properties:
       mail:
-        debug: true
+        debug: false
         smtp:
           auth: true
           enable: true
