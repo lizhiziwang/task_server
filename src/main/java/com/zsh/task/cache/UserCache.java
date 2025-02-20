@@ -17,12 +17,11 @@ public class UserCache extends BaseCache_<LoginUser>{
     ThreadPoolConfig tpc;
     // 可使用aop代理自动执行
     public void updateCache(Long id){
-        Runnable task = ()->{
+        Runnable task = () ->  {
             User user = um.selectById(id);
             this.put(String.valueOf(id),new LoginUser(user));
         };
 
         tpc.poolExecutor().execute(task);
-
     }
 }

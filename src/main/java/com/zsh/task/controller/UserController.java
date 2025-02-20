@@ -156,13 +156,12 @@ public class UserController {
         }
 //        User re = new User();
         user.setIsOnline(0);
-        user.setId(IdUtil.getSnowflakeNextId());
+        user.setId(IdUtil.getSnowflakeNextId());//雪花算法生成唯一ID
 //        user.setName(user.getName());
         user.setPwd(encoder.encode(user.getPwd()));
         user.setCreateTime(new Date())
                 .setUpdateTime(new Date());
         return Result.succeed(us.save(user));
-
     }
     // 编辑用户
     @PostMapping("/update")

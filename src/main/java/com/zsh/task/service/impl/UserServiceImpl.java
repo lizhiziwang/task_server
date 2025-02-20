@@ -58,12 +58,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         String userId = loginUser.getUser().getId().toString();
         StpUtil.setLoginId(loginUser.getUser().getId());
-//        System.out.println("satoken是否正常"+StpUtil.checkLogin());
         String token = StpUtil.getTokenValue();
 
         uc.put(userId,loginUser);
         Map<String ,Object> re = new HashMap<>();
-//        User user = loginUser.getUser();
         user.setIsOnline(1);
         updateByPrimaryKeySelective(user);
 
