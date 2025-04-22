@@ -3,13 +3,14 @@ server:
 # 日志打印配置
 mybatis-plus:
   configuration:
-    call-setters-on-nulls: true
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
-#logging:
-#  level:
-#    root: info
-#    com.zsh.task.mapper.UserMapper: info
-#    com.zsh.task.mapper.MessageMapper: info
+#    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+logging:
+  level:
+    root: info
+#    com.zsh.task.mapper.UserMapper: debug
+#    com.zsh.task.mapper.MessageMapper: debug
+    com.zsh.task.mapper.OrderMapper: debug
 
 #management:
 #  endpoints:
@@ -22,7 +23,7 @@ game:
     key: 17be85abdc35ac0635cfcfe31fe10936
   url:
     # ","分割，不需要进行鉴权的接口
-    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo,/actuator,/sendEmail,/email,/loginTest
+    notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo,/actuator,/sendEmail,/email,/loginTest,/ai
   file:
     # 文件存放路径
     path: D:/task_server_game/upload/

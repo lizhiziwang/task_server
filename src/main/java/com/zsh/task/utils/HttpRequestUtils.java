@@ -18,8 +18,8 @@ public class HttpRequestUtils {
     }
     // 访问本地deepseek-r1
     //todo 图片等资源
-    public static void ask_ds_r1_Model(OutputStream os1, Object prompt) throws IOException {
-        String urlString = "http://localhost:11434/api/generate";
+    public static void ask_ds_r1_Model(OutputStream os1, String message) throws IOException {
+        String urlString = "http://localhost:11434/api/chat";
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         // 设置请求方法为POST
@@ -28,30 +28,34 @@ public class HttpRequestUtils {
         conn.setRequestProperty("Accept", "application/json");
         conn.setDoOutput(true);
         // 创建要发送的JSON对象
-        JSONObject jsonInput = new JSONObject();
-        jsonInput.put("model", "deepseek-r1");
-        jsonInput.put("prompt", prompt);
-        jsonInput.put("stream", true);
+//        JSONObject jsonInput = new JSONObject();
+//        jsonInput.put("model", "deepseek-r1");
+//        jsonInput.put("prompt", prompt);
+//        jsonInput.put("stream", true);
         // 将JSON输入写入请求的输出流
         try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInput.toString().getBytes(StandardCharsets.UTF_8);
+            byte[] input = message.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
         // 读取响应内容
         try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuffer response = new StringBuffer();
             String responseLine;
             while ((responseLine = br.readLine()) != null) {
-                JSONObject jsonResponse = JSONObject.parseObject(responseLine.trim());
-//                System.out.print(jsonResponse.get("response"));
-                os1.write(jsonResponse.get("response").toString().getBytes(StandardCharsets.UTF_8));
+                JSONObject jsonResponse = JSONObject.parseObject(responseLine);
+                JSONObject MESS = jsonResponse.getJSONObject("message");
+                response.append(MESS.getString("content"));
+//                System.out.println(MESS.get("content"));
+                if(MESS.getString("content")!=null)
+                    os1.write(MESS.getString("content").getBytes(StandardCharsets.UTF_8));
                 os1.flush();
             }
-            os1.close();
             // 解析JSON响应并提取response字段
 //            JSONObject jsonResponse = new JSONObject(response.toString());
 //            JSONObject jsonResponse = JSONObject.parseObject(response.toString());
 //            return response.toString();
         }
+        os1.close();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

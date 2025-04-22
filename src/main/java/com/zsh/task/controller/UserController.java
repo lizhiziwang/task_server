@@ -403,6 +403,9 @@ public class UserController {
                 List<User> users = us.list();
                 List<User> update = new ArrayList<>();
                 users.forEach(e->{
+                    if(e.getId() == 0L){
+                        return;
+                    }
                     String var = StpUtil.getTokenValueByLoginId(e.getId());
                     int var2 = org.apache.commons.lang3.StringUtils.isNoneBlank(var)?1:0;
                     if(e.getIsOnline() != var2){
