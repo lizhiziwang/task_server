@@ -29,7 +29,7 @@ public class TradAccount implements Serializable {
     @TableField(value = "game_type",jdbcType = JdbcType.VARCHAR)
     private String gameType;
     @TableField(value = "game_id",jdbcType = JdbcType.VARCHAR)
-    private String gameId;
+    private int gameId;
     @TableField(value = "pub_user",jdbcType = JdbcType.BIGINT)
     private Long pubUser;
     @TableField(value = "is_exist",jdbcType = JdbcType.SMALLINT)
@@ -40,6 +40,8 @@ public class TradAccount implements Serializable {
     private Integer wantNum;
     @TableField(value = "show_img",jdbcType = JdbcType.VARCHAR)
     private String showImg;
+    @TableField(value = "unit",jdbcType = JdbcType.VARCHAR)
+    private String unit;
 
     @TableField(exist = false)
     private Integer isWant;

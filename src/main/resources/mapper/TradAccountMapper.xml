@@ -9,7 +9,7 @@
         <id column="des_text" jdbcType="VARCHAR" property="desText" />
         <id column="price" jdbcType="DOUBLE" property="price" />
         <id column="game_type" jdbcType="VARCHAR" property="gameType" />
-        <id column="game_id" jdbcType="VARCHAR" property="gameId" />
+        <id column="game_id" jdbcType="INTEGER" property="gameId" />
         <id column="pub_user" jdbcType="BIGINT" property="pubUser" />
         <id column="is_exist" jdbcType="SMALLINT" property="isExist" />
         <id column="game_name" jdbcType="VARCHAR" property="gameName" />
@@ -133,7 +133,7 @@
                     game_type = #{gameType,jdbcType=VARCHAR},
                 </if>
                 <if test="gameId != null">
-                    game_id = #{gameId,jdbcType=VARCHAR},
+                    game_id = #{gameId,jdbcType=INTEGER},
                 </if>
                 <if test="pubUser != null">
                     pub_user = #{pubUser,jdbcType=BIGINT},
@@ -176,7 +176,7 @@
     </update>
     <select id="selectPage" resultType="com.zsh.task.entity.TradAccount" >
         select t1.id,t1.create_time as createTime,t1.update_time updateTime,t1.des_file desFile,t1.des_text desText,t1.price,t1.game_type gameType,t1.game_id gameId
-                 ,t1.pub_user pubUser,t1.is_exist isExist,t1.game_name gameName,t1.want_num wantNum,t1.show_img showImg
+                 ,t1.pub_user pubUser,t1.is_exist isExist,t1.game_name gameName,t1.want_num wantNum,t1.show_img showImg,t1.unit unit
              ,t2.is_want as isWant from trad_account t1 left join want_account t2 on (t1.id = t2.account_id and t2.user_id = #{userId,jdbcType=BIGINT})
             ${ew.customSqlSegment}
     </select>

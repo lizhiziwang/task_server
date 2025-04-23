@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zsh.task.common.LoginUserThreatContext;
+import com.zsh.task.constant.InventoryUnit;
 import com.zsh.task.constant.OrderState;
 import com.zsh.task.entity.TradAccount;
 import com.zsh.task.mapper.TradAccountMapper;
@@ -85,8 +86,11 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
                 qw.orderByAsc(params.getOrderBy());
             }
         }
+        Page<TradAccount> tradAccountPage = baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page, qw);
+        tradAccountPage.getRecords().forEach(e-> e.setUnit(InventoryUnit.findByCode(e.getUnit()).getAlia()));
 
-        return baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
+
+        return tradAccountPage;
     }
     @Override
     public Page<TradAccount> selectPage(Page<TradAccount> page,QueryWrapper<TradAccount> qw){

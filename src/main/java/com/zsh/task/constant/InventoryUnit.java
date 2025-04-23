@@ -5,15 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum GameType {
-
-    MOBA(1,"MOBA","粮油"),
-    FPS(2,"FPS","果蔬"),
-    ACT(3,"ACT","花卉"),
-    STG(4,"STG","畜禽产品"),
-    FTG(5,"FTG","林产品"),
-    AVG(6,"AVG","水产品"),
-    SIM(7,"SIM","其他农副产品");
+public enum InventoryUnit {
+    JIN(1,"JIN","斤"),
+    KG(2,"KG","千克"),
+    GE(3,"GE","个"),
+    KE(4,"KE","ke");
 //    RPG(8,"RPG","角色扮演"),
 //    SG(9,"SG","策略"),
 //    MG(10,"MG","音乐"),
@@ -27,7 +23,7 @@ public enum GameType {
     final int num;
     final String alia;
 
-    GameType(int num,String code,String alia){
+    InventoryUnit(int num,String code,String alia){
         this.num = num;
         this.code = code;
         this.alia = alia;
@@ -39,18 +35,18 @@ public enum GameType {
         return this.alia;
     }
 
-    public static GameType findByName(String name){
-        GameType[] values = values();
-        for (GameType item : values) {
+    public static InventoryUnit findByName(String name){
+        InventoryUnit[] values = values();
+        for (InventoryUnit item : values) {
             if (item.alia.equals(name)){
                 return item;
             }
         }
         throw new IllegalArgumentException("name is illegal");
     }
-    public static GameType findByCode(String code){
-        GameType[] values = values();
-        for (GameType item : values) {
+    public static InventoryUnit findByCode(String code){
+        InventoryUnit[] values = values();
+        for (InventoryUnit item : values) {
             if (item.code.equals(code)){
                 return item;
             }
@@ -59,9 +55,9 @@ public enum GameType {
     }
     public static List<Map<String,String>> toList(){
         List<Map<String,String>> RE = new ArrayList<>();
-        GameType[] items = values();
+        InventoryUnit[] items = values();
 
-        for(GameType var :items){
+        for(InventoryUnit var :items){
             Map<String,String> map = new HashMap<>();
             map.put("code",var.code);
             map.put("name",var.alia);
