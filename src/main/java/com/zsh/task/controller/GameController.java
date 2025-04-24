@@ -58,6 +58,17 @@ public class GameController {
                                    @RequestParam(name = "accId") Long accId){
         return Result.succeed(was.addLike(userId, accId));
     }
+    @PostMapping("/want/list")
+    public Result<Boolean> addLike(@RequestParam(name = "userId") Long userId,
+                                   @RequestParam(name = "accIds") Long [] accIds){
+        int re = 0;
+        for(Long i :accIds){
+            if (!was.addLike(userId,i)) {
+                re++;
+            }
+        }
+        return Result.succeed(re==0);
+    }
 
     @PostMapping("/files")
     public Result<List<String>> uploadFiles(MultipartFile [] files){

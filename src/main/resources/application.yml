@@ -8,7 +8,7 @@ mybatis-plus:
 logging:
   level:
     root: info
-#    com.zsh.task.mapper.UserMapper: debug
+    com.zsh.task.mapper.UserMapper: debug
 #    com.zsh.task.mapper.MessageMapper: debug
     com.zsh.task.mapper.OrderMapper: debug
 

@@ -22,4 +22,6 @@ public interface TradAccountService extends IService<TradAccount> {
     Page<TradAccount> selectPage(Page<TradAccount> page, QueryWrapper<TradAccount> qw);
     List<Map<String,Object>> typeCount(Long pubUser,String pubTime);
     Page<?> selectPage_2(Map<String,Object> param);
+
+    List<TradAccount> findByIds(List<Long> ids);
 }

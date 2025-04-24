@@ -41,30 +41,31 @@ public class OrderController {
     UserCache uc;
     //todo 超卖问题
     @PostMapping
-    @Transactional(rollbackFor = Exception.class)
-    public Result<Order> addOrder(@RequestParam Long [] accIds){
-        if (accIds == null||accIds.length == 0){
-            return Result.failed("请选择下单对象");
-        }
-        QueryWrapper<TradAccount> qw = new QueryWrapper<>();
-        qw.in("id",Arrays.asList(accIds));
+    public Result<Order> addOrder(@RequestBody Order vo){
+        return os.addOrder(vo);
 
-        List<TradAccount> ta = tas.list(qw);
-        double price = 0;
-        for (TradAccount var : ta) {
-            if(var.getIsExist() == 0){
-                return Result.failed(var.getGameName()+"的账号为："+var.getGameId()+"已被人下单了");
-            }
-            price += var.getPrice();
-            var.setIsExist(0);
-        }
-        tas.updateExcite(ta);
-
-        Long currentUserId = LoginUserThreatContext.getUser().getId();
-        List<Long> ids = Arrays.asList(accIds);
-//        double pricesByIds = tas.getPricesByIds(ids);
-
-        return Result.succeed(os.addOrder(currentUserId,ids,price));
+//        if (accIds == null||accIds.length == 0){
+//            return Result.failed("请选择下单对象");
+//        }
+//        QueryWrapper<TradAccount> qw = new QueryWrapper<>();
+//        qw.in("id",Arrays.asList(accIds));
+//
+//        List<TradAccount> ta = tas.list(qw);
+//        double price = 0;
+//        for (TradAccount var : ta) {
+//            if(var.getIsExist() == 0){
+//                return Result.failed(var.getGameName()+"的账号为："+var.getGameId()+"已被人下单了");
+//            }
+//            price += var.getPrice();
+//            var.setIsExist(0);
+//        }
+//        tas.updateExcite(ta);
+//
+//        Long currentUserId = LoginUserThreatContext.getUser().getId();
+//        List<Long> ids = Arrays.asList(accIds);
+////        double pricesByIds = tas.getPricesByIds(ids);
+//
+//        return Result.succeed(os.addOrder(currentUserId,ids,price));
     }
     //付款
     @GetMapping("/pay/{id}")
@@ -106,10 +107,10 @@ public class OrderController {
 
         os.updateById(o);
 
-        JSONArray ja = JSON.parseArray(o.getCommodityList());
+//        JSONArray ja = JSON.parseArray(o.getCommodityList());
         QueryWrapper<TradAccount> qw = new QueryWrapper<>();
 
-        qw.in("id",ja.toArray());
+//        qw.in("id",ja.toArray());
         List<TradAccount> list = tas.list(qw);
         list.forEach(e->e.setUpdateTime(new Date()).setIsExist(1));
         tas.updateExcite(list);
@@ -129,10 +130,10 @@ public class OrderController {
         order.setUpdateTime(new Date())
                 .setState(OrderState.REFUNDED.code);
         os.updateById(order);
-        JSONArray ja = JSON.parseArray(order.getCommodityList());
+//        JSONArray ja = JSON.parseArray(order.getCommodityList());
         QueryWrapper<TradAccount> qw = new QueryWrapper<>();
 
-        qw.in("id",ja.toArray());
+//        qw.in("id",ja.toArray());
         List<TradAccount> list = tas.list(qw);
         list.forEach(e->e.setUpdateTime(new Date()).setIsExist(1));
         tas.updateExcite(list);

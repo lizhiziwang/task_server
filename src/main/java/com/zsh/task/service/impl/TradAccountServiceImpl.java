@@ -127,24 +127,25 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
         long current = Long.parseLong(param.get("current").toString());
         long size = Long.parseLong(param.get("size").toString());
 
-        QueryWrapper<?> qw = new QueryWrapper<>();
-        qw.orderByDesc("t1.want_num");
+        QueryWrapper<TradAccount> qw = new QueryWrapper<>();
+        qw.eq("pub_user",pubUser).orderByDesc("want_num");
 
-        Page<Map<String,Object>> page = new Page<>(current, size);
+        Page<TradAccount> page = new Page<>(current, size);
 
-        baseMapper.selectPage_2(pubUser,page,qw);
-        List<Map<String,Object>> records = page.getRecords();
+        this.page(page, qw);
+        List<TradAccount> records = page.getRecords();
 
-        records.forEach(e->{
-            Object state = e.get("state");
-            if (state == null) {
-                e.put("state_","未售出");
-            }else {
-                e.put("state_", OrderState.findByCode(state.toString()).name);
-            }
-        });
+        records.forEach(e-> e.setUnit(InventoryUnit.findByCode(e.getUnit()).getAlia()));
 
         return page;
+    }
+
+    @Override
+    public List<TradAccount> findByIds(List<Long> ids) {
+        QueryWrapper<TradAccount> q = new QueryWrapper<>();
+
+        q.in("id",ids);
+        return this.list(q);
     }
 
     public static void main(String[] args) {

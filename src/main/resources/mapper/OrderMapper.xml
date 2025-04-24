@@ -4,17 +4,21 @@
 
     <resultMap id="BaseResultMap" type="com.zsh.task.entity.Order">
         <id column="id" jdbcType="BIGINT" property="id" />
-        <id column="commodity_list" jdbcType="VARCHAR" property="commodityList" />
+<!--        <id column="commodity_list" jdbcType="VARCHAR" property="commodityList" />-->
         <id column="state" jdbcType="VARCHAR" property="state" />
         <id column="create_user" jdbcType="BIGINT" property="createUser" />
         <id column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <id column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <id column="sum" jdbcType="DOUBLE" property="sum" />
+        <id column="delivery_address" jdbcType="VARCHAR" property="deliveryAddress" />
+        <id column="delivery_user" jdbcType="VARCHAR" property="deliveryUser" />
+        <id column="delivery_phone" jdbcType="VARCHAR" property="deliveryPhone" />
+
     </resultMap>
 <!--    SELECT t1.*,t2.id from orders t1 left join trad_account t2 on (JSON_CONTAINS(t1.commodity_list,concat(t2.id,''),"$") = 1) -->
 
     <sql id="base_sql" >
-        id,CAST(commodity_list AS CHAR) as commodity_list,state,create_user,create_time,update_time,sum
+        id,state,create_user,create_time,update_time,sum,delivery_address,delivery_user,delivery_phone
     </sql>
 
     <insert id="insertSelective" parameterType="com.zsh.task.entity.Order">
@@ -23,9 +27,7 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="commodityList != null">
-                commodity_list,
-            </if>
+
             <if test="state != null">
                 state,
             </if>
@@ -46,9 +48,6 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
-            </if>
-            <if test="commodityList != null">
-                CAST(#{commodityList,jdbcType=VARCHAR} AS JSON),
             </if>
             <if test="state != null">
                 #{state,jdbcType=VARCHAR},
@@ -76,9 +75,6 @@
                 </if>
                 <if test="updateTime != null">
                     update_time = #{updateTime,jdbcType=TIMESTAMP},
-                </if>
-                <if test="commodityList != null">
-                    commodity_list = CAST(#{commodityList,jdbcType=VARCHAR} AS JSON),
                 </if>
                 <if test="state != null">
                     state = #{state,jdbcType=VARCHAR},

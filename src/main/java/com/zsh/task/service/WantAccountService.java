@@ -10,4 +10,5 @@ public interface WantAccountService extends IService<WantAccount> {
      * @description 添加或取消想要
      * */
     boolean addLike(Long userId,Long accId);
+
 }

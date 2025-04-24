@@ -18,8 +18,8 @@ public class Order implements Serializable {
 
     @TableId
     private Long id;
-    @TableField(value = "commodity_list",jdbcType = JdbcType.VARCHAR)
-    private String commodityList;
+//    @TableField(value = "commodity_list",jdbcType = JdbcType.VARCHAR)
+//    private String commodityList;
     @TableField(value = "state",jdbcType = JdbcType.VARCHAR)
     private String state;
     @TableField(value = "create_user",jdbcType = JdbcType.BIGINT)
@@ -30,6 +30,14 @@ public class Order implements Serializable {
     private Date updateTime;
     @TableField(value = "sum",jdbcType = JdbcType.DOUBLE)
     private Double sum;
+    @TableField(value = "delivery_address")
+    private String deliveryAddress;
+    @TableField(value = "delivery_user")
+    private String deliveryUser;
+    @TableField(value = "delivery_phone")
+    private String deliveryPhone;
+    @TableField(exist = false)
+    private List<OrderGood> goods;
 
     @TableField(exist = false)
     private List<TradAccount> accounts;

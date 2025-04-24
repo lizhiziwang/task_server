@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public Result<String> exceptionHandler(HttpServletRequest httpServletRequest, Exception e) {
-        log.error("服务错误:", e.getMessage());
+        log.error("服务错误:"+ e.getMessage());
         return Result.failed("服务发生异常，请稍后再试");
     }
 }
