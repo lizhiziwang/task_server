@@ -36,6 +36,8 @@ public class Order implements Serializable {
     private String deliveryUser;
     @TableField(value = "delivery_phone")
     private String deliveryPhone;
+
+
     @TableField(exist = false)
     private List<OrderGood> goods;
 

@@ -133,7 +133,7 @@ public class OrderController {
 //        JSONArray ja = JSON.parseArray(order.getCommodityList());
         QueryWrapper<TradAccount> qw = new QueryWrapper<>();
 
-//        qw.in("id",ja.toArray());
+        qw.in("id",id);
         List<TradAccount> list = tas.list(qw);
         list.forEach(e->e.setUpdateTime(new Date()).setIsExist(1));
         tas.updateExcite(list);

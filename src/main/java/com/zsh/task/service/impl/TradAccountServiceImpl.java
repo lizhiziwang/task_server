@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zsh.task.common.LoginUserThreatContext;
+import com.zsh.task.constant.GameType;
 import com.zsh.task.constant.InventoryUnit;
 import com.zsh.task.constant.OrderState;
 import com.zsh.task.entity.TradAccount;
@@ -94,7 +95,11 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
     }
     @Override
     public Page<TradAccount> selectPage(Page<TradAccount> page,QueryWrapper<TradAccount> qw){
-        return baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
+        baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page,qw);
+
+        page.getRecords().forEach(e->e.setUnit(InventoryUnit.findByCode(e.getUnit()).getAlia()));
+
+        return page;
     }
 
     @Override

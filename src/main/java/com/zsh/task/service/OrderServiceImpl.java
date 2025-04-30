@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -118,27 +119,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (vo.getSumLow()!=null&&vo.getSumTop()!=null) {
             qw.between("sum",vo.getSumLow(),vo.getSumTop());
         }
-        if(vo.getProNum() != null){
-            qw.apply("JSON_LENGTH(commodity_list) = {0}",vo.getProNum());
-        }
+//        if(vo.getProNum() != null){
+//            qw.apply("JSON_LENGTH(commodity_list) = {0}",vo.getProNum());
+//        }
 
         if(vo.getAsc())
             qw.orderByAsc(vo.getOrderBy());
         qw.orderByDesc(vo.getOrderBy());
         //分页查询
-        baseMapper.selectPage_(page,qw);
+        baseMapper.selectPage(page,qw);
 
         List<Order> records = page.getRecords();
+
+        List<Long> order_id = records.stream().map(Order::getId).collect(Collectors.toList());
+
+        List<Map<String, Object>> byOrder = ogm.findByOrder(order_id);
+
+        Map<Object, List<Map<String, Object>>> orderId = byOrder.stream().collect(Collectors.groupingBy(e -> e.get("orderId")));
+
         records.forEach(e->{
             e.setState_(OrderState.findByCode(e.getState()).name);
-//            JSONArray array = JSONArray.parseArray(e.getCommodityList());
-            JSONArray ja = new JSONArray();
+            List<Map<String, Object>> maps = orderId.get(e.getId());
 
-//            for (Object o : array) {
-//                ja.add(String.valueOf(o));
-//            }
+            List<TradAccount> list = JSONObject.parseObject(JSONObject.toJSONString(maps), List.class);
+            e.setAccounts(list);
 
-//            e.setCommodityList(ja.toJSONString());
         });
         return page;
     }

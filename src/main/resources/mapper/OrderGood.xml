@@ -9,4 +9,15 @@
         <result column="create_user" jdbcType="BIGINT" property="createUser" />
     </resultMap>
 
+    <select id="findByOrder" parameterType="java.util.List">
+        select t1.order_id orderId, t2.id id,t2.des_text desTest, t2.price price, t2.game_type gameType,t2.game_id gameId,
+               t2.pub_user pubUser,t2.game_name gameName,t2.want_num wantNum,t2.show_img showImg,t2.unit unit
+            from ordered_goods t1 left join trad_account t2 on (t1.good_id = t2.id)
+        where t1.order_id in
+        <foreach collection="ids" item="i" separator="," open="(" close=")">
+            #{i}
+        </foreach>
+
+    </select>
+
 </mapper>

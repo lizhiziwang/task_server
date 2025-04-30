@@ -143,6 +143,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             Date end = DateUtil.parse(var2);
             wrapper.between("birthday",start,end);
         }
+        wrapper.ne("t1.id",0);
         Page<User> userPage = baseMapper.myPage(new Page<>(current, size), wrapper);
         List<User> records = userPage.getRecords();
         records.forEach(e->{

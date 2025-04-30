@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class WantAccountServiceImpl extends ServiceImpl<WantAccountMapper, WantAccount> implements WantAccountService {
@@ -45,5 +46,19 @@ public class WantAccountServiceImpl extends ServiceImpl<WantAccountMapper, WantA
                 .setCreateTime(new Date())
                 .setUpdateTime(new Date());
         return save(wa)&&(tam.addOrLeWantNum(accId,true)>0);
+    }
+    // todo: 只支持取消
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean addOrCancelLike(long userId, List<Long> accId) {
+        QueryWrapper<WantAccount> qw = new QueryWrapper<>();
+        qw.eq("user_id",userId)
+                .in("account_id",accId);
+
+        List<WantAccount> wantAccounts = baseMapper.selectList(qw);
+
+        wantAccounts.forEach(w->w.setIsWant(0).setUpdateTime(new Date()));
+
+        return saveOrUpdateBatch(wantAccounts);
     }
 }

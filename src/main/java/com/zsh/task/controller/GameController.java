@@ -58,6 +58,17 @@ public class GameController {
                                    @RequestParam(name = "accId") Long accId){
         return Result.succeed(was.addLike(userId, accId));
     }
+    @PostMapping("/batch/want")
+    public Result<Boolean> addLike(@RequestBody Map<String,Object> param){
+        Long userId = Long.valueOf(param.get("userId").toString());
+//        Long userId = (Long) param.get("userId");
+        Object accId = param.get("accId");
+
+        List<Long> list = JSONObject.parseObject(JSONObject.toJSONString(accId), List.class);
+
+
+        return Result.succeed(was.addOrCancelLike(userId, list));
+    }
     @PostMapping("/want/list")
     public Result<Boolean> addLike(@RequestParam(name = "userId") Long userId,
                                    @RequestParam(name = "accIds") Long [] accIds){

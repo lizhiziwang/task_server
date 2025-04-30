@@ -14,6 +14,7 @@ import java.util.Map;
 public interface OrderMapper extends BaseMapper<Order> {
     int insertSelective(Order order);
     int updateSelective(Order order);
+    @Deprecated
     Page<Order> selectPage_(@Param("page")Page<Order> page,
                             @Param(Constants.WRAPPER)QueryWrapper<Order> qw);
     List<Map<String,Object>> countData(@Param("pubUser") Long pubUser,
