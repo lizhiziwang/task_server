@@ -88,7 +88,8 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
             }
         }
         Page<TradAccount> tradAccountPage = baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page, qw);
-        tradAccountPage.getRecords().forEach(e-> e.setUnit(InventoryUnit.findByCode(e.getUnit()).getAlia()));
+        tradAccountPage.getRecords().forEach(e-> e.setUnit(InventoryUnit.findByCode(e.getUnit()).getAlia())
+                .setGameType(GameType.findByCode(e.getGameType()).getAlia()));
 
 
         return tradAccountPage;

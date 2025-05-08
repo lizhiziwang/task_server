@@ -398,6 +398,7 @@ public class UserController {
 
     @PostConstruct
     public void userState(){
+//        System.out.println("***********"+StpUtil.getLoginDevice());
         Runnable task = ()->{
             while (true){
                 List<User> users = us.list();

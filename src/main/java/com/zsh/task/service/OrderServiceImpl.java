@@ -63,10 +63,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         vo.setId(orderId).setCreateTime(new Date()).setState(OrderState.NOPAID.code).setCreateUser(currentUserId)
                 .setUpdateTime(new Date());
         List<OrderGood> goods = vo.getGoods();
-//        if(goods == null||goods.size() ==0 ){
-//            return Result.failed("q")
-//        }
-        // prent
         goods.forEach(e->{
             e.setId(IdUtil.getSnowflakeNextId());
             e.setCreateUser(currentUserId);

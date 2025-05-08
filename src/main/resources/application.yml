@@ -26,9 +26,9 @@ game:
     notVerify: /user/login,/user/register,/file,/alipay/notify,/alipay/pay,/ws/serverTwo,/actuator,/sendEmail,/email,/loginTest,/ai
   file:
     # 文件存放路径
-    path: D:/task_server_game/upload/
+#    path: D:/task_server_game/upload/
     # linux下路径
-#    path: /my/task_server/
+    path: /my/task_server/
 
 
 spring:
@@ -41,8 +41,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.jdbc.Driver
-#    password: Zsh621002
-    password: 123456
+    password: Zsh621002
+#    password: 123456
     username: root
     druid:
       #SpringBoot因为默认是hikari数据源所以对于其他数据源默认是不注入这些属性的，需要手动配置
