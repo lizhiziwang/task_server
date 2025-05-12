@@ -221,4 +221,7 @@
      </select>
 
 
+    <select id="findByOrder" parameterType="java.lang.Long">
+        select t1.* from trad_account t1 left join ordered_goods t2  on(t1.id = t2.good_id) where t1.id = #{orderId,jdbcType=BIGINT}
+    </select>
 </mapper>

@@ -75,7 +75,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 校验库存
         for(TradAccount item :byIds){
             for (OrderGood e:goods){
-                if(e.getGoodId() == item.getId()){
+                if(e.getGoodId().equals(item.getId())){
                     if(e.getGoodNum() > item.getGameId()){
                         return Result.failed(item.getGameName()+"库存不足");
                     }
@@ -157,6 +157,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             date = sdf.format(var);
         }
         return baseMapper.countData(pubUser,date);
+    }
+
+    @Override
+    public List<TradAccount> findOrderGoods(Long orderId) {
+        return tas.findByOrder(orderId);
+    }
+
+    @Override
+    public List<OrderGood> getGoodsByOrderId(Long orderId) {
+        QueryWrapper<OrderGood> qw = new QueryWrapper<>();
+
+        qw.eq("order_id",orderId);
+        return ogm.selectList(qw);
     }
 
     public static void main(String[] args) {

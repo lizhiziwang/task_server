@@ -26,4 +26,5 @@ public interface TradAccountMapper extends BaseMapper<TradAccount> {
     List<Map<String,Object>> typeCount(@Param("pubUser")Long pubUser,
                                        @Param("pubTime")String pubTime);
     Page<Map<String,Object>> selectPage_2(@Param("pubUser") Long pubUser, Page<?> page, @Param(Constants.WRAPPER)QueryWrapper<?> qw);
+    List<TradAccount> findByOrder(@Param("orderId")Long orderId);
 }

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zsh.task.common.Result;
 import com.zsh.task.entity.Order;
+import com.zsh.task.entity.OrderGood;
+import com.zsh.task.entity.TradAccount;
 import com.zsh.task.vo.OrderSearchVo;
 
 import java.util.List;
@@ -16,4 +18,8 @@ public interface OrderService extends IService<Order> {
 
     Page<Order> page(OrderSearchVo vo);
     List<Map<String,Object>> countData(Long pubUser, String pubTime);
+
+
+    List<TradAccount> findOrderGoods(Long orderId);
+    List<OrderGood> getGoodsByOrderId(Long orderId);
 }

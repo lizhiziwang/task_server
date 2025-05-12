@@ -9,6 +9,7 @@ import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
 import com.zsh.task.constant.OrderState;
 import com.zsh.task.entity.Order;
+import com.zsh.task.entity.OrderGood;
 import com.zsh.task.entity.TradAccount;
 import com.zsh.task.entity.User;
 import com.zsh.task.service.OrderService;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -107,13 +109,16 @@ public class OrderController {
 
         os.updateById(o);
 
-//        JSONArray ja = JSON.parseArray(o.getCommodityList());
-        QueryWrapper<TradAccount> qw = new QueryWrapper<>();
+        List<TradAccount> orderGoods = os.findOrderGoods(o.getId());
+        List<OrderGood> goodsByOrderId = os.getGoodsByOrderId(o.getId());
 
-//        qw.in("id",ja.toArray());
-        List<TradAccount> list = tas.list(qw);
-        list.forEach(e->e.setUpdateTime(new Date()).setIsExist(1));
-        tas.updateExcite(list);
+        Map<Long, OrderGood> collect = goodsByOrderId.stream().collect(Collectors.toMap(OrderGood::getGoodId, e -> e));
+
+        for (TradAccount orderGood : orderGoods) {
+            orderGood.setGameId(orderGood.getGameId()-collect.get(orderGood.getId()).getGoodNum());
+        }
+
+        tas.updateBatchById(orderGoods);
         return Result.succeed(true);
     }
 

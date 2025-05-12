@@ -24,4 +24,6 @@ public interface TradAccountService extends IService<TradAccount> {
     Page<?> selectPage_2(Map<String,Object> param);
 
     List<TradAccount> findByIds(List<Long> ids);
+
+    List<TradAccount> findByOrder(Long orderId);
 }

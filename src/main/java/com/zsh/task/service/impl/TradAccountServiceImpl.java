@@ -82,9 +82,9 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
             }
         }else {
             if (params.isDesc()){
-                qw.orderByDesc(params.getOrderBy());
+                qw.orderByDesc("t1."+params.getOrderBy());
             }else {
-                qw.orderByAsc(params.getOrderBy());
+                qw.orderByAsc("t1."+params.getOrderBy());
             }
         }
         Page<TradAccount> tradAccountPage = baseMapper.selectPage(LoginUserThreatContext.getUser().getId(), page, qw);
@@ -152,6 +152,11 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
 
         q.in("id",ids);
         return this.list(q);
+    }
+
+    @Override
+    public List<TradAccount> findByOrder(Long orderId) {
+        return baseMapper.findByOrder(orderId);
     }
 
     public static void main(String[] args) {
