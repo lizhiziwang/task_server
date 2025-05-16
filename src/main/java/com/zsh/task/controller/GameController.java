@@ -130,8 +130,10 @@ public class GameController {
 
     @PostMapping
     public Result<Boolean> save(@RequestBody TradAccount ta){
-        ta.setGameType(GameType.findByName(ta.getGameType()).name());
+
         if (ta.getId() == null) {
+            ta.setGameType(GameType.findByName(ta.getGameType()).name());
+
             ta.setId(IdUtil.getSnowflakeNextId())
                     .setWantNum(0)
                     .setIsExist(1)
