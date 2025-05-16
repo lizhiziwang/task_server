@@ -128,6 +128,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<Order> records = page.getRecords();
 
         List<Long> order_id = records.stream().map(Order::getId).collect(Collectors.toList());
+        if(order_id.size() == 0){
+            return new Page<>(0,20);
+        }
 
         List<Map<String, Object>> byOrder = ogm.findByOrder(order_id);
 

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsh.task.common.LoginUserThreatContext;
 import com.zsh.task.common.Result;
 import com.zsh.task.constant.GameType;
+import com.zsh.task.constant.InventoryUnit;
 import com.zsh.task.entity.MoneyRecord;
 import com.zsh.task.entity.TradAccount;
 import com.zsh.task.service.MoneyRecordService;
@@ -52,6 +53,20 @@ public class GameController {
     @PostMapping("/page")
     public Result<Page<TradAccount>> selectAccountPage(@RequestBody AccountSelectVo params){
         return Result.succeed(tas.selectAccountPage(params));
+    }
+    @PostMapping("/page_")
+    public Result<Page<TradAccount>> selectAccountPage_(@RequestBody AccountSelectVo params){
+        params.setOrderBy("create_time");
+        Page<TradAccount> tradAccountPage = tas.selectAccountPage(params);
+        List<TradAccount> records = tradAccountPage.getRecords();
+
+        records.forEach(e->
+                e.setUnitName(e.getUnit())
+                        .setGameTypeName(e.getGameType())
+                        .setUnit(InventoryUnit.findByName(e.getUnit()).getCode())
+                        .setGameType(GameType.findByName(e.getGameType()).getCode()));
+
+        return Result.succeed(tradAccountPage);
     }
     @PostMapping("/want")
     public Result<Boolean> addLike(@RequestParam(name = "userId") Long userId,

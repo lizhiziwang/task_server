@@ -157,6 +157,7 @@ public class UserController {
 //        User re = new User();
         user.setIsOnline(0);
         user.setId(IdUtil.getSnowflakeNextId());//雪花算法生成唯一ID
+        user.setPurse(0.0);
 //        user.setName(user.getName());
         user.setPwd(encoder.encode(user.getPwd()));
         user.setCreateTime(new Date())

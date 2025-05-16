@@ -5,10 +5,11 @@ mybatis-plus:
   configuration:
 #    call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true
 logging:
   level:
     root: info
-    com.zsh.task.mapper.UserMapper: debug
+#    com.zsh.task.mapper.UserMapper: debug
 #    com.zsh.task.mapper.MessageMapper: debug
     com.zsh.task.mapper.OrderMapper: debug
     com.zsh.task.mapper.TradAccountMapper: debug
@@ -40,6 +41,7 @@ spring:
     allow-circular-references: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
+#    url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     url: jdbc:mysql://113.45.182.107:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.jdbc.Driver
     password: Zsh621002

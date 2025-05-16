@@ -1,6 +1,8 @@
 package com.zsh.task.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,6 +25,7 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradAccount> implements TradAccountService {
@@ -134,14 +137,17 @@ public class TradAccountServiceImpl extends ServiceImpl<TradAccountMapper, TradA
         long size = Long.parseLong(param.get("size").toString());
 
         QueryWrapper<TradAccount> qw = new QueryWrapper<>();
-        qw.eq("pub_user",pubUser).orderByDesc("want_num");
+        qw.eq("t2.pub_user",pubUser);
+        qw.orderByDesc("t2.want_num");
 
         Page<TradAccount> page = new Page<>(current, size);
 
-        this.page(page, qw);
+        baseMapper.perTraAdmin(page, qw);
         List<TradAccount> records = page.getRecords();
 
-        records.forEach(e-> e.setUnit(InventoryUnit.findByCode(e.getUnit()).getAlia()));
+        records.forEach(e-> e.setUnitName(InventoryUnit.findByCode(e.getUnit()).getAlia())
+                .setStateName(OrderState.findByCode(e.getState()).name)
+        );
 
         return page;
     }

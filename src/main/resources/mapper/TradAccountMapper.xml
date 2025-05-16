@@ -14,12 +14,12 @@
         <id column="is_exist" jdbcType="SMALLINT" property="isExist" />
         <id column="game_name" jdbcType="VARCHAR" property="gameName" />
         <id column="want_num" jdbcType="INTEGER" property="wantNum" />
-        <id column="show_img" jdbcType="VARCHAR" property="showImg" />
+        <id column="unit" jdbcType="VARCHAR" property="unit" />
     </resultMap>
 
     <sql id="base_column">
         id,create_time as createTime,update_time updateTime,des_file desFile,des_text desText,price,game_type gameType,game_id gameId
-            ,pub_user pubUser,is_exist isExist,game_name gameName,want_num wantNum,show_img showImg
+            ,pub_user pubUser,is_exist isExist,game_name gameName,want_num wantNum,show_img showImg,unit
     </sql>
 
 
@@ -223,5 +223,12 @@
 
     <select id="findByOrder" parameterType="java.lang.Long">
         select t1.* from trad_account t1 left join ordered_goods t2  on(t1.id = t2.good_id) where t1.id = #{orderId,jdbcType=BIGINT}
+    </select>
+
+
+    <select id="perTraAdmin" resultType="com.zsh.task.entity.TradAccount">
+        select t2.*,t3.id orderId,t3.state state,t3.delivery_user maijia,t2.price*t1.good_num traPrice
+            from ordered_goods t1 left join trad_account t2 on(t2.id = t1.good_id)
+             left join orders t3 on(t1.order_id = t3.id) ${ew.customSqlSegment}
     </select>
 </mapper>

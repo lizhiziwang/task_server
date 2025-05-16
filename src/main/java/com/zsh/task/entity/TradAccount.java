@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Data
 @Accessors(chain = true)
-@TableName(value = "trad_account")
+@TableName(value = "trad_account",autoResultMap = true)
 public class TradAccount implements Serializable {
     @TableId
     private Long id;
@@ -47,4 +47,18 @@ public class TradAccount implements Serializable {
     private Integer isWant;
     @TableField(exist = false)
     private String avatar;
+    @TableField(exist = false)
+    private Long orderId;
+    @TableField(exist = false)
+    private String state;
+    @TableField(exist = false)
+    private String stateName;
+    @TableField(exist = false)
+    private String unitName;
+    @TableField(exist = false)
+    private String maijia;
+    @TableField(exist = false)
+    private double traPrice;
+    @TableField(exist = false)
+    private String gameTypeName;
 }
