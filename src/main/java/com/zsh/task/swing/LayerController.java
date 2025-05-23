@@ -32,11 +32,11 @@ public class LayerController extends JPanel {
         JLabel tile = new JLabel("layer");
         tile.setPreferredSize(new Dimension(220,30));
 
-        tile.putClientProperty("FlatLaf.styleClass","h2");
-        tile.setHorizontalAlignment(SwingConstants.LEFT); // 水平居中
+        tile.putClientProperty("FlatLaf.styleClass","h3");
+        tile.setHorizontalAlignment(SwingConstants.CENTER); // 水平居中
         ImageIcon imageIcon = new ImageIcon("src/main/resources/图层管理.png");
         Image image = imageIcon.getImage();
-        Image scaledInstance = image.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        Image scaledInstance = image.getScaledInstance(18, 18, Image.SCALE_SMOOTH);
         tile.setIcon(new ImageIcon(scaledInstance));
 
         a.add(tile,BorderLayout.CENTER);
@@ -47,7 +47,7 @@ public class LayerController extends JPanel {
         var.setPreferredSize(new Dimension(220,800));
 //        var.setVerticalScrollBar(new JScrollBar());
 
-        JList<String> list=new JList<>();
+        JList<JLabel> list=new JList<>();
         list.putClientProperty("FlatLaf.styleClass","large");
 
 
@@ -55,11 +55,12 @@ public class LayerController extends JPanel {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         var.setViewportView(list);
-        String[] listData=new String[100];
+        JLabel[] listData=new JLabel[100];
 
 
         for (int i = 0; i < 100; i++) {
-            listData[i]="这是列表框的第"+(i+1)+"个元素~";
+            listData[i] = new JLabel();
+            listData[i].setText("这是列表框的第"+(i+1)+"个元素~");
         }
         list.setListData(listData);
         add(var);
