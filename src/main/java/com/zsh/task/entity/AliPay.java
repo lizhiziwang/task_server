@@ -1,8 +1,8 @@
 package com.zsh.task.entity;
 
-import lombok.Data;
-
-@Data
+//import lombok.Data;
+//
+//@Data
 public class AliPay {
     private String traceNo;
     private double totalAmount;

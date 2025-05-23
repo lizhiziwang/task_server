@@ -11,15 +11,15 @@ logging:
     root: info
 #    com.zsh.task.mapper.UserMapper: debug
 #    com.zsh.task.mapper.MessageMapper: debug
-    com.zsh.task.mapper.OrderMapper: debug
-    com.zsh.task.mapper.TradAccountMapper: debug
 
 #management:
 #  endpoints:
 #    web:
 #      exposure:
 #        include: "*"
-
+layer:
+  file:
+    path:
 game:
   gaoDe:
     key: 17be85abdc35ac0635cfcfe31fe10936
@@ -41,8 +41,8 @@ spring:
     allow-circular-references: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
-#    url: jdbc:mysql://113.45.182.107:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+#    url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+    url: jdbc:mysql://113.45.182.107:3306/mydb?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.jdbc.Driver
     password: Zsh621002
 #    password: 123456
@@ -63,42 +63,6 @@ spring:
       testOnReturn: false
       poolPreparedStatements: true
 
-############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
-  sa-token:
-    # token 名称（同时也是 cookie 名称）
-    token-name: satoken
-    # token 有效期（单位：秒） 默认30天，-1 代表永久有效
-    timeout: 86400
-    # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
-    active-timeout: -1
-    # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
-    is-concurrent: false
-    # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
-    is-share: true
-    # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
-    token-style: uuid
-    # 是否输出操作日志
-    is-log: false
-  # 163邮箱
-  mail:
-    host: smtp.163.com
-    port: 994
-    username: zhengsh1818@163.com
-    password: LZbF33AxgFug6amU
-    default-encoding: UTF-8
-    protocol: smtps
-
-    properties:
-      mail:
-        debug: false
-        smtp:
-          auth: true
-          enable: true
-
-
-jwt:
-  secret: asffeegrthtkygfdfwaerfdbgtyugfrtdgbvythfgrytfhnbrtdjhrfdshusgviwe0fu94509t8arfthtyijkujhmdhftykgyu
-  expiration: 86400000 # 1天的毫秒数
 # 支付相关
 alipay:
   notifyUrl: http://113.45.182.107:8062/alipay/notify

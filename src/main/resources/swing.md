@@ -1,0 +1,4 @@
+- JCEF 嵌入 Vue3 打包后的静态资源
+- FlatLaf 主题库（Swing）
+- OpenCV 4.7.0（图形处理）
+- 
