@@ -24,7 +24,7 @@ public class LayerController extends JPanel {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         JPanel a = new JPanel();
-        a.setPreferredSize(new Dimension(220,30));
+        a.setPreferredSize(new Dimension(220,20));
         a.setLayout(new BorderLayout());
 
 
