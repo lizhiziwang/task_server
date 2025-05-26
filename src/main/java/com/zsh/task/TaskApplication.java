@@ -20,7 +20,7 @@ public class TaskApplication {
 //        System.out.println("启动成功，Sa-Token 配置如下：" + SaManager.getConfig());
 
         System.setProperty("flatlaf.debug", "true");
-        UIManager.setLookAndFeel(new FlatMacLightLaf());
+        UIManager.setLookAndFeel(new FlatDarculaLaf());
         // 设置全局属性
         UIManager.put("Button.arc", 10);        // 圆角按钮（值为 0 时为直角）
         UIManager.put("Component.focusWidth", 1); // 焦点边框宽度

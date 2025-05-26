@@ -1,6 +1,8 @@
 package com.zsh.task.swing;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -13,6 +15,11 @@ import java.net.URL;
 @Slf4j
 @Component
 public class MapController extends JPanel {
+    @Autowired
+    LayerController layerController;
+    @Autowired
+    SwingMapRenderer renderer;
+
     // 视图变换状态
     private double scale = 1.0;
     private Point dragStart = null;
@@ -28,7 +35,10 @@ public class MapController extends JPanel {
     private static final int ORIGIN_X = 0;
     private static final int ORIGIN_Y = 0;
 
-    public MapController() {
+    private Graphics2D g;
+
+    @PostConstruct
+    public void init() {
         // 启用双缓冲以减少闪烁
         setDoubleBuffered(true);
 
@@ -153,73 +163,38 @@ public class MapController extends JPanel {
 
         // 设置抗锯齿
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        // 保存原始变换
-        AffineTransform originalTransform = g2d.getTransform();
+        int width = getWidth();
+        int height = getHeight();
 
-        // 应用平移和缩放变换
-        // 1. 平移到面板中心
-        g2d.translate(getWidth()/2, getHeight()/2);
-        // 2. 应用缩放
-        g2d.scale(scale, scale);
-        // 3. 应用平移（修正方向）
-        g2d.translate(-(baseTranslateX + translateX), -(baseTranslateY + translateY));
 
+
+        AffineTransform viewTransform = new AffineTransform();
+
+        // 构建视图变换：平移到中心 → 缩放 → 应用偏移
+        viewTransform.translate(width/2, height/2);
+        viewTransform.scale(scale, scale);
+        viewTransform.translate(-(baseTranslateX + translateX), -(baseTranslateY + translateY));
+
+        g2d.setTransform(viewTransform); // 应用视图变换
+
+        int x = getX();
+        int y = getY();
+        log.info("x;"+x);
+        log.info("y;"+y);
+        g2d.setColor(Color.RED);
+        g2d.fillOval(x,y,5,5);
         // 设置背景色
         setBackground(Color.black);
 
         // 绘制网格线，帮助可视化变换效果
         drawGrid(g2d);
-
-        // 绘制基本图形
-        // 绘制矩形
-        g2d.setColor(Color.RED);
-        g2d.fillRect(50, 50, 100, 100);
-
-        // 绘制圆形
-        g2d.setColor(Color.BLUE);
-        g2d.fillOval(200, 50, 100, 100);
-
-        // 绘制椭圆
-        g2d.setColor(Color.GREEN);
-        g2d.fillOval(350, 50, 200, 100);
-
-        // 绘制线条
-        g2d.setColor(Color.WHITE);
-        g2d.setStroke(new BasicStroke(3f / (float)scale));
-        g2d.drawLine(50, 200, 550, 200);
-
-        // 绘制多边形
-        int[] xPoints = {100, 150, 200};
-        int[] yPoints = {250, 200, 250};
-        g2d.setColor(Color.ORANGE);
-        g2d.fillPolygon(xPoints, yPoints, 3);
-
-        // 绘制文本
-        g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font("Arial", Font.BOLD, 24));
-        g2d.drawString("Java Swing绘图示例", 200, 350);
-
-        // 显示当前缩放比例和位置
-        g2d.setFont(new Font("Arial", Font.PLAIN, 12));
-        g2d.drawString(String.format("缩放: %.2f%%", scale * 100), -100, -100);
-        g2d.drawString(String.format("位置: (%.2f, %.2f)", baseTranslateX + translateX,
-                baseTranslateY + translateY), -100, -80);
-
-        // 加载并绘制图片
-        try {
-            URL imageUrl = new URL("https://picsum.photos/200/300");
-            Image image = new ImageIcon(imageUrl).getImage();
-            g2d.drawImage(image, 250, 400, this);
-        } catch (IOException e) {
-            e.printStackTrace();
-            g2d.setColor(Color.RED);
-            g2d.drawString("图片加载失败", 250, 450);
-        }
+        layerController.getLayers().parallelStream().forEach(e->{
+            renderer.drawFeatures(g2d,e.features(),viewTransform);
+        });
 
         // 恢复原始变换
-        g2d.setTransform(originalTransform);
+        g2d.setTransform(new AffineTransform());
     }
 
     // 绘制网格线，帮助可视化变换效果

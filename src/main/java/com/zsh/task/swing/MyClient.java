@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 @Component
 public class MyClient extends JFrame implements InitializingBean {
@@ -21,6 +22,7 @@ public class MyClient extends JFrame implements InitializingBean {
     @Resource
     LayerController layerController;
     private void initializeGUI() {
+        this.setIconImage(new ImageIcon("src/main/resources/logistic.png").getImage());
         setSize(1080,800);
         // 确保在EDT线程执行
         setDefaultLookAndFeelDecorated(true);

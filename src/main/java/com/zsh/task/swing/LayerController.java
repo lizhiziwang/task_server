@@ -1,70 +1,101 @@
 package com.zsh.task.swing;
 
+import com.zsh.task.layer.IGeoData;
+import com.zsh.task.layer.ILayer;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class LayerController extends JPanel {
 
-    @Value("${layer.file.path}")
-    String path;
 
-    private List<String> urls;
+    private final List<ILayer> layers = new ArrayList<>();
+
+    private final JScrollPane var = new JScrollPane();
+
+    public List<ILayer> getLayers() {
+        return layers;
+    }
+
+    public void addLayer(ILayer layer){
+        layers.add(layer);
+        updateLayerCards();
+    }
 
     @PostConstruct
     public void init(){
-        String[] p = path.split(",");
-
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        JPanel a = new JPanel();
-        a.setPreferredSize(new Dimension(220,20));
-        a.setLayout(new BorderLayout());
-
 
         //todo 处理文件是否可用
         JLabel tile = new JLabel("layer");
-        tile.setPreferredSize(new Dimension(220,30));
 
         tile.putClientProperty("FlatLaf.styleClass","h3");
-        tile.setHorizontalAlignment(SwingConstants.CENTER); // 水平居中
+        tile.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
         ImageIcon imageIcon = new ImageIcon("src/main/resources/图层管理.png");
         Image image = imageIcon.getImage();
         Image scaledInstance = image.getScaledInstance(18, 18, Image.SCALE_SMOOTH);
-        tile.setIcon(new ImageIcon(scaledInstance));
+        ImageIcon imageIcon1 = new ImageIcon(scaledInstance);
+        tile.setIcon(imageIcon1);
 
-        a.add(tile,BorderLayout.CENTER);
-        add(a);
+//        a.add(tile,BorderLayout.CENTER);
+        add(tile);
 
-        JScrollPane var=new JScrollPane();
         // 关键：设置 BoxLayout 垂直布局
         var.setPreferredSize(new Dimension(220,800));
 //        var.setVerticalScrollBar(new JScrollBar());
+        updateLayerCards();
 
-        JList<JLabel> list=new JList<>();
-        list.putClientProperty("FlatLaf.styleClass","large");
-
-
-        //限制只能选择一个元素
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        var.setViewportView(list);
-        JLabel[] listData=new JLabel[100];
-
-
-        for (int i = 0; i < 100; i++) {
-            listData[i] = new JLabel();
-            listData[i].setText("这是列表框的第"+(i+1)+"个元素~");
-        }
-        list.setListData(listData);
         add(var);
     }
+    private void updateLayerCards() {
+        // 获取内容面板
+        JPanel contentPanel = getContentPanel();
+        contentPanel.removeAll();
 
+        if (!layers.isEmpty()) {
+            for (ILayer layer : layers) {
+                LayerCard card = new LayerCard(layer);
+                card.addShowLayerListener(new ShowLayerListener() {
+                    @Override
+                    public void onShowLayer(ShowLayerEvent event) {
+                        System.out.println(event.getMessage());
+                    }
+
+                    @Override
+                    public void onCloseLayer(ShowLayerEvent event) {
+                        // 处理关闭图层的逻辑
+                        layers.remove(layer);
+                        updateLayerCards();
+                    }
+                });
+                contentPanel.add(card);
+            }
+        }
+
+        // 刷新UI
+        SwingUtilities.invokeLater(() -> {
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        });
+    }
+
+    private JPanel getContentPanel() {
+        java.awt.Component view = var.getViewport().getView();
+        if (view instanceof JPanel) {
+            return (JPanel) view;
+        }
+
+        // 如果没有内容面板，创建一个使用垂直布局的面板
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        var.setViewportView(panel);
+        return panel;
+    }
 
 }
