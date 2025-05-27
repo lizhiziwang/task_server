@@ -37,6 +37,8 @@ public class MapController extends JPanel {
 
     private Graphics2D g;
 
+    private static final double[] currentClick = new double[2];
+
     @PostConstruct
     public void init() {
         // 启用双缓冲以减少闪烁
@@ -55,6 +57,8 @@ public class MapController extends JPanel {
                 // 仅处理右键
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     dragStart = e.getPoint();
+//                    currentClick[0] =
+                    log.info("当前点击坐标,x:"+dragStart.getX()+",y:"+dragStart.getY());
                     if (DEBUG) System.out.println("Right button pressed at: " + dragStart);
                 }
             }
@@ -120,7 +124,7 @@ public class MapController extends JPanel {
             } else {
                 scale /= 1.1; // 缩小
                 // 限制最小缩放比例
-                scale = Math.max(0.1, scale);
+//                scale = Math.max(0.1, scale);
             }
 
             // 计算缩放后鼠标在内容中的新位置
@@ -157,6 +161,7 @@ public class MapController extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+
         if (DEBUG) System.out.println("Painting component: width=" + getWidth() + ", height=" + getHeight() +
                 ", scale=" + scale + ", translation=(" +
                 (baseTranslateX + translateX) + ", " + (baseTranslateY + translateY) + ")");
@@ -173,31 +178,32 @@ public class MapController extends JPanel {
 
         // 构建视图变换：平移到中心 → 缩放 → 应用偏移
         viewTransform.translate(width/2, height/2);
+//        viewTransform.translate(1.3484504126262369E7, 3651373.5966631062);
         viewTransform.scale(scale, scale);
         viewTransform.translate(-(baseTranslateX + translateX), -(baseTranslateY + translateY));
+//        viewTransform.translate(1.3484504126262369E7, 3651373.5966631062);
 
         g2d.setTransform(viewTransform); // 应用视图变换
 
-        int x = getX();
-        int y = getY();
-        log.info("x;"+x);
-        log.info("y;"+y);
+        log.info("width;"+width);
+        log.info("height;"+height);
         g2d.setColor(Color.RED);
-        g2d.fillOval(x,y,5,5);
+        g2d.fillOval((int) currentClick[0]-3, (int) currentClick[1]-3,6,6);
+        g2d.fillOval(-1000-3, -1000-3,6,6);
         // 设置背景色
         setBackground(Color.black);
 
         // 绘制网格线，帮助可视化变换效果
         drawGrid(g2d);
         layerController.getLayers().parallelStream().forEach(e->{
-            renderer.drawFeatures(g2d,e.features(),viewTransform);
+            renderer.drawFeatures(g2d,e.features(),viewTransform,width,height);
         });
 
         // 恢复原始变换
         g2d.setTransform(new AffineTransform());
     }
 
-    // 绘制网格线，帮助可视化变换效果
+//     绘制网格线，帮助可视化变换效果
     private void drawGrid(Graphics2D g2d) {
         g2d.setColor(Color.GRAY);
         g2d.setStroke(new BasicStroke(1f / (float)scale));
@@ -209,13 +215,14 @@ public class MapController extends JPanel {
 
         // 绘制网格
         g2d.setColor(Color.GRAY);
-        for (int x = -1000; x <= 1000; x += 50) {
-            g2d.drawLine(x, -1000, x, 1000);
+        for (int x = -20000000; x <= 20000000; x += 1000) {
+            g2d.drawLine(x, -20000000, x, 20000000);
         }
-        for (int y = -1000; y <= 1000; y += 50) {
-            g2d.drawLine(-1000, y, 1000, y);
+        for (int y = -20000000; y <= 20000000; y += 1000) {
+            g2d.drawLine(-20000000, y, 20000000, y);
         }
     }
+
 
     // 获取当前视图状态，用于调试
     public String getViewState() {

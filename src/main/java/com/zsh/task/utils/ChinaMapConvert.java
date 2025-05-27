@@ -167,4 +167,14 @@ public class ChinaMapConvert {
         //System.out.printf("墨卡托坐标转经纬度后的坐标:%f,%f \n",lon,lat);
         return new double[]{lon,lat};
     }
+    public static double[] mercatorxToPixel(double x, double y, int width, int height) {
+        // 假设地图当前显示范围为 [minX, minY, maxX, maxY]
+        double scaleX = width / (mercatorMax*2);
+        double scaleY = height / (mercatorMax*2);
+
+        return new double[]{
+                (x + mercatorMax) * scaleX,
+                (y + mercatorMax) * scaleY  // Y轴翻转
+        };
+    }
 }

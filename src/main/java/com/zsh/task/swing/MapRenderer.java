@@ -24,7 +24,7 @@ public interface MapRenderer {
      * @param features 地理要素集合
      * @param transform 视图变换（缩放、平移）
      */
-    void drawFeatures(Graphics2D g2d, java.util.List<IGeoData> features, AffineTransform transform);
+    void drawFeatures(Graphics2D g2d, java.util.List<IGeoData> features, AffineTransform transform,int width,int height);
 
     /**
      * 绘制标注文本（如地名、坐标）
